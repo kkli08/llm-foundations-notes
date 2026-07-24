@@ -18,10 +18,14 @@ GitHub 的 `origin/main` 是共享事实来源。任何设备都不能假设自�
 ## 第一次在新电脑使用
 
 ```bash
+gh auth status
 gh repo clone kkli08/llm-foundations-notes
 cd llm-foundations-notes
 ./scripts/bootstrap-repo.sh
 ```
+
+如果 `gh auth status` 显示尚未登录，由用户先运行 `gh auth login`。Codex 在执行需要网络的
+`gh`、pull 或 push 操作前应明确申请 GitHub/网络权限；不得打印 Token 或其他凭据。
 
 Bootstrap 会为当前 clone 设置：
 
@@ -143,3 +147,7 @@ Hook 是最后一道防线，不代替主动运行：
 注意：
 
 > GitHub 会同步仓库文件和流程说明，但 Codex 的本地定时任务注册可能属于具体电脑。需要在哪台电脑运行 18:25 和 09:25 自动任务，就在那台电脑根据 `AUTOMATION.md` 检查或创建任务；避免多台电脑同时运行造成重复提交。
+
+迁移主整理任务时，先在新电脑完成 clone、bootstrap、项目解析和一次全量对话扫描。确认新
+电脑能正常运行后再停用旧电脑任务，不要让两台电脑同时处于 ACTIVE。项目 ID、GitHub 权限
+批准和自动化记忆属于本机状态；新电脑必须按项目名称和路径重新解析，不能复制旧电脑 ID。

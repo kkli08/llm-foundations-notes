@@ -38,6 +38,7 @@
 - [预训练](notes/2026/07/训练与RL后训练基础_20260724.md#3-预训练先学会预测文本中的下一个-token)
 - [SFT](notes/2026/07/训练与RL后训练基础_20260724.md#4-sft仍然预测-token但数据变成了理想行为示范)
 - [RL 后训练闭环](notes/2026/07/训练与RL后训练基础_20260724.md#5-rl-后训练模型从评价结果中继续学习)
+- [Old、Current、Reference Logprob 与 KL](notes/2026/07/训练与RL后训练基础_20260724.md#59-相同-token-的-logprob到底指什么)
 - [Actor、Rollout 与权重同步](notes/2026/07/训练与RL后训练基础_20260724.md#6-为什么-actor-与-rollout-engine-要分开)
 
 ### 并行与状态管理

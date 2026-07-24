@@ -48,6 +48,13 @@ Prompt → Rollout → Reward → Advantage
 ```
 
 ```text
+同一条 Response token：
+Old Logprob      → 生成数据时的策略概率
+Current Logprob  → 当前 Actor 的训练概率
+Reference Logprob → KL 约束的参考概率
+```
+
+```text
 MTP 推理：
 当前正式状态
 → Draft 多个候选 token
@@ -69,6 +76,9 @@ MTP 推理：
 - 为什么 8K 到 32K 会导致 TTFT 增大、KV Cache 变大、并发下降。
 - 预训练、SFT、RL 后训练的目标与关系；
 - Reward、Advantage、Reference 分别解决什么问题；
+- Old、Current、Reference Logprob 为什么必须对应同一条 Response token；
+- 二元 Reward 表示什么，为什么它不是所有任务的固定评分方式；
+- KL 约束为什么不是 Checkpoint 回滚；
 - Actor 与 Rollout Engine 为什么分工、何时同步权重；
 - MTP 的训练侧和推理侧为什么相关但不相同；
 - Draft Reject 为什么必须回滚 Cache 或其他状态；
