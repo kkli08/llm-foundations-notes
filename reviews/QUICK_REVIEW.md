@@ -38,6 +38,24 @@ Decode：
 完成全部层后才产生下一个 token。
 ```
 
+```text
+预训练：海量文本 → Next-token Loss → 通用参数
+SFT：Prompt—Response → 监督 Loss → 指令行为
+RL 后训练：
+Prompt → Rollout → Reward → Advantage
+→ Actor Backward / Optimizer
+→ 权重同步 → 新一轮 Rollout
+```
+
+```text
+MTP 推理：
+当前正式状态
+→ Draft 多个候选 token
+→ 主模型 Verify
+→ 提交接受的连续前缀
+→ 回滚未接受 token 的 KV / 其他状态
+```
+
 ## 当前必会解释
 
 - Dense、MoE 和 baseline 分别是什么；
@@ -49,12 +67,19 @@ Decode：
 - Prefill 与 Decode 的区别；
 - PagedAttention 为什么类似虚拟内存，但不等于模型 Attention；
 - 为什么 8K 到 32K 会导致 TTFT 增大、KV Cache 变大、并发下降。
+- 预训练、SFT、RL 后训练的目标与关系；
+- Reward、Advantage、Reference 分别解决什么问题；
+- Actor 与 Rollout Engine 为什么分工、何时同步权重；
+- MTP 的训练侧和推理侧为什么相关但不相同；
+- Draft Reject 为什么必须回滚 Cache 或其他状态；
+- DP、TP、PP、EP、CP 分别切分什么。
 
 ## 间隔复习队列
 
 | 笔记 | 首次学习 | D+1 | D+3 | D+7 | D+14 | D+30 |
 |---|---|---|---|---|---|---|
 | [LLM 普通模型 Baseline 前的基础理论](../notes/2026/07/基础理论_20260723.md) | 2026-07-23 | 2026-07-24 | 2026-07-26 | 2026-07-30 | 2026-08-06 | 2026-08-22 |
+| [从预训练到 RL 后训练：MTP 与状态管理基础](../notes/2026/07/训练与RL后训练基础_20260724.md) | 2026-07-24 | 2026-07-25 | 2026-07-27 | 2026-07-31 | 2026-08-07 | 2026-08-23 |
 
 完成复习后，可以把日期改成：
 
