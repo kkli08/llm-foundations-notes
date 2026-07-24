@@ -1,0 +1,33 @@
+#!/bin/sh
+
+set -eu
+
+branch=$(git branch --show-current)
+if [ "$branch" != "main" ]; then
+  echo "ERROR: 笔记仓库只允许从 main 执行常规推送。" >&2
+  exit 1
+fi
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "ERROR: 工作区或暂存区不干净。请先确认并提交修改。" >&2
+  exit 1
+fi
+
+untracked=$(git ls-files --others --exclude-standard)
+if [ -n "$untracked" ]; then
+  echo "ERROR: 存在未跟踪文件，拒绝推送：" >&2
+  printf '%s\n' "$untracked" >&2
+  exit 1
+fi
+
+echo "Checking latest origin/main before push..."
+git fetch --quiet origin main
+
+remote_main=$(git rev-parse refs/remotes/origin/main)
+if ! git merge-base --is-ancestor "$remote_main" HEAD; then
+  echo "ERROR: 本地 main 未包含最新 origin/main。" >&2
+  echo "请先运行 ./scripts/sync-before-work.sh；禁止 force push。" >&2
+  exit 1
+fi
+
+echo "Pre-push check passed: local HEAD contains latest origin/main."

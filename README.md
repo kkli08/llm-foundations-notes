@@ -9,12 +9,34 @@
 - [每日收集箱说明](inbox/README.md)：白天如何记录尚未整理的内容。
 - [每日笔记模板](templates/daily-note.md)：正式笔记的统一结构。
 - [自动整理规则](AUTOMATION.md)：每日自动任务会做什么、不会做什么。
+- [跨设备同步流程](SYNC_WORKFLOW.md)：在任何电脑上阅读、更新和推送前的强制同步步骤。
+- [Codex 仓库规则](AGENTS.md)：其他电脑和其他 Codex 对话自动继承的约束。
 
 ## 当前核心笔记
 
 - [2026-07-23：LLM 普通模型 Baseline 前的基础理论](notes/2026/07/基础理论_20260723.md)
 
 ## 推荐使用方式
+
+### 打开仓库后：先同步
+
+无论准备阅读、更新还是让 Codex 总结仓库，都先运行：
+
+```bash
+./scripts/sync-before-work.sh
+```
+
+推送前，在本地提交完成且工作区干净后，再运行一次同步脚本，然后才能：
+
+```bash
+git push origin main
+```
+
+新电脑首次 clone 后运行：
+
+```bash
+./scripts/bootstrap-repo.sh
+```
 
 ### 白天：只管捕获
 
@@ -82,8 +104,15 @@ reviews/QUICK_REVIEW.md
 ```text
 llm-foundations-notes/
 ├── README.md                    # 使用说明和入口
+├── AGENTS.md                    # Codex 跨设备强制规则
 ├── INDEX.md                     # 日期索引、主题索引
 ├── AUTOMATION.md                # 自动整理规范
+├── SYNC_WORKFLOW.md             # 跨设备同步流程
+├── .githooks/
+│   └── pre-push                 # 推送前远端新鲜度检查
+├── scripts/
+│   ├── bootstrap-repo.sh        # 新电脑初始化
+│   └── sync-before-work.sh      # 阅读、更新、推送前同步
 ├── inbox/                       # 当天未整理的原始记录
 │   └── README.md
 ├── notes/                       # 已整理的正式笔记
@@ -103,3 +132,7 @@ llm-foundations-notes/
 - 一次实验尽量只改变一个主要变量；
 - GitHub 中的内容以 Markdown 为主，保证手机和电脑都能快速阅读；
 - 每次自动提交只包含本知识库范围内的文件。
+- GitHub `origin/main` 是跨设备共享事实来源；
+- 每次阅读、更新前先执行 fast-forward-only 同步；
+- 每次推送前提交本地修改、再次同步，再进行推送；
+- 禁止自动 stash、reset、重写历史或 force push。
