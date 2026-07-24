@@ -49,9 +49,18 @@ Prompt → Rollout → Reward → Advantage
 
 ```text
 同一条 Response token：
-Old Logprob      → 生成数据时的策略概率
-Current Logprob  → 当前 Actor 的训练概率
-Reference Logprob → KL 约束的参考概率
+Old Logprob       → 数据生成时的行为策略概率
+Prox Logprob      → 本轮更新开始时的 Actor 锚点
+Current Logprob   → 当前带梯度 Actor 的训练概率
+Reference Logprob → 冻结参考策略的概率
+ratio = exp(Current - Prox)
+正 Advantage 推高概率，负 Advantage 压低概率
+```
+
+```text
+PPO Clip：限制 Current 相对 Prox 的单轮更新幅度
+KL 约束：限制 Actor 相对 Reference 的长期漂移
+Checkpoint：保存或恢复训练状态
 ```
 
 ```text
@@ -76,7 +85,13 @@ MTP 推理：
 - 为什么 8K 到 32K 会导致 TTFT 增大、KV Cache 变大、并发下降。
 - 预训练、SFT、RL 后训练的目标与关系；
 - Reward、Advantage、Reference 分别解决什么问题；
-- Old、Current、Reference Logprob 为什么必须对应同一条 Response token；
+- Old、Prox、Current、Reference Logprob 为什么必须对应同一条 Response token；
+- `ratio = exp(current_logp - prox_logp)` 表示什么；
+- Advantage 如何通过 Policy Loss、Backward 和 Optimizer 改变 token 概率；
+- PPO Clip 与 KL 约束分别限制哪两种偏移；
+- Trajectory 为什么需要 Token、Logprob、Mask、Reward 和权重版本；
+- 为什么组内 Reward 全相同时，相对 Advantage 往往很弱；
+- 算法稳定性指标和系统性能指标有什么区别；
 - 二元 Reward 表示什么，为什么它不是所有任务的固定评分方式；
 - KL 约束为什么不是 Checkpoint 回滚；
 - Actor 与 Rollout Engine 为什么分工、何时同步权重；

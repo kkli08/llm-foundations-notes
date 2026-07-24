@@ -38,8 +38,11 @@
 - [预训练](notes/2026/07/训练与RL后训练基础_20260724.md#3-预训练先学会预测文本中的下一个-token)
 - [SFT](notes/2026/07/训练与RL后训练基础_20260724.md#4-sft仍然预测-token但数据变成了理想行为示范)
 - [RL 后训练闭环](notes/2026/07/训练与RL后训练基础_20260724.md#5-rl-后训练模型从评价结果中继续学习)
-- [Old、Current、Reference Logprob 与 KL](notes/2026/07/训练与RL后训练基础_20260724.md#59-相同-token-的-logprob到底指什么)
+- [Old、Prox、Current、Reference Logprob](notes/2026/07/训练与RL后训练基础_20260724.md#59-相同-token-的四类-logprob到底指什么)
+- [Advantage、Policy Ratio 与 Policy Loss](notes/2026/07/训练与RL后训练基础_20260724.md#512-advantage-怎样变成-policy-loss)
+- [PPO Clip 与 KL 约束](notes/2026/07/训练与RL后训练基础_20260724.md#513-ppo-clip-与-kl-约束不是一回事)
 - [Actor、Rollout 与权重同步](notes/2026/07/训练与RL后训练基础_20260724.md#6-为什么-actor-与-rollout-engine-要分开)
+- [从启动命令到一个 RL Step](notes/2026/07/训练与RL后训练基础_20260724.md#65-从启动命令到一个-rl-step-的通用工程链路)
 
 ### 并行与状态管理
 
@@ -64,7 +67,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的验证算法与框架实现（MTP 入门已覆盖）；
-- PPO、GRPO、KL 与 Advantage 的数学细节；
+- PPO、GRPO 的完整数学推导与实现差异（Policy Ratio、Clip 与 KL 入门已覆盖）；
 - GDN、递归状态与混合 Attention 的具体实现。
 
 ## 索引维护规则
