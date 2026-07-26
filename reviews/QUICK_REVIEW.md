@@ -125,6 +125,12 @@ MTP 推理：
 常规独立 Draft/Target：
 Target Verify 计算自己的 KV/State，
 不要假设把 Draft KV 直接搬进 Target Cache。
+
+一种递归式原生 MTP Draft 仍可按 Token 串行，
+但每步只执行少量 MTP Layer；成本要比较：
+k × 小型 MTP + 1 × Target Block Verify
+和 k × 完整 Target 单 Token Decode。
+“短块 Prefill-like”只描述候选已知后的 Verify。
 ```
 
 ## 当前必会解释
@@ -170,6 +176,8 @@ Target Verify 计算自己的 KV/State，
 - 为什么 Target 通常需要自己的 KV/State，不能泛化成直接搬运 Draft KV；
 - 为什么逻辑提交/回滚不等于一定发生显存复制或删除；
 - MTP 加速为什么必须联看接受长度、Draft/Verify 成本和 Tokens/Target Forward；
+- 为什么递归式 MTP Draft 即使串行，仍可能比重复运行完整 Target 便宜；
+- 为什么 MTP 上线后必须按 Batch/QPS、长度和 Sampling 做 off/on 分桶实测；
 - DP、TP、PP、EP、CP 分别切分什么。
 
 ## 间隔复习队列
