@@ -9,6 +9,7 @@
 - [2026-07-23：LLM 普通模型 Baseline 前的基础理论](notes/2026/07/基础理论_20260723.md)
 - [2026-07-24：从预训练到 RL 后训练——MTP 与状态管理基础](notes/2026/07/训练与RL后训练基础_20260724.md)
 - [2026-07-26：RLVR 策略角色、Logprob 时序与训练诊断](notes/2026/07/RLVR策略版本与训练诊断_20260726.md)
+- [2026-07-26：MTP Label、Loss 与参数更新](notes/2026/07/MTP标签损失与参数更新_20260726.md)
 
 ## 按主题
 
@@ -31,6 +32,7 @@
 - [FlashAttention 与 PagedAttention](notes/2026/07/基础理论_20260723.md#第八部分flashattention-与-pagedattention)
 - [上下文越长为什么越慢](notes/2026/07/基础理论_20260723.md#第九部分为什么上下文越长越慢)
 - [MTP、Draft、Verify 与 Cache 回滚](notes/2026/07/训练与RL后训练基础_20260724.md#7-mtp训练时多步预测推理时多-token-草拟)
+- [MTP 训练侧与推理侧怎样接起来](notes/2026/07/MTP标签损失与参数更新_20260726.md#7-训练侧-mtp-与推理侧-mtp-怎样接起来)
 - [KV Cache、递归状态与混合 Attention](notes/2026/07/训练与RL后训练基础_20260724.md#8-从-kv-cache-扩展到通用模型状态)
 
 ### 训练与后训练
@@ -47,6 +49,10 @@
 - [模型家族、Checkpoint 与 Actor/Reference/Rollout](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#1-模型家族-checkpoint-与运行角色)
 - [W0/W5/W6 策略版本与 Logprob 时序](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#2-w0-w5-w6-策略版本与-logprob-时序)
 - [如何判断 RLVR 变好还是变差](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#4-如何判断-rlvr-变好还是变差)
+- [NTP 与 MTP Label Shift](notes/2026/07/MTP标签损失与参数更新_20260726.md#2-未来-token-怎样变成-ntp-与-mtp-label)
+- [Cross-Entropy 与正确 Token 概率](notes/2026/07/MTP标签损失与参数更新_20260726.md#3-cross-entropy-到底衡量什么)
+- [Forward、Loss、Backward 与 Optimizer](notes/2026/07/MTP标签损失与参数更新_20260726.md#4-forward-loss-backward-optimizer-的严格分工)
+- [MTP 参数的完整生命周期](notes/2026/07/MTP标签损失与参数更新_20260726.md#6-mtp-参数的完整生命周期)
 
 ### 并行与状态管理
 
@@ -62,6 +68,8 @@
 - [训练、RL、MTP 自测问题](notes/2026/07/训练与RL后训练基础_20260724.md#14-自测问题)
 - [RLVR 策略版本与训练诊断一分钟复习](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#6-一分钟复习)
 - [RLVR 策略版本与训练诊断自测](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#7-自测问题)
+- [MTP Label、Loss 与参数更新一分钟复习](notes/2026/07/MTP标签损失与参数更新_20260726.md#9-一分钟复习)
+- [MTP Label、Loss 与参数更新自测](notes/2026/07/MTP标签损失与参数更新_20260726.md#10-自测问题)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题

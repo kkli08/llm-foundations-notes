@@ -84,6 +84,34 @@ Held-out 任务效果
 ```
 
 ```text
+MTP 训练：
+完整序列 [A, B, C, D, E]
+→ NTP Label 向未来移动 1 位
+→ MTP Label 向未来移动更多 Offset
+→ 各路径 Cross-Entropy
+→ 加权 Total Loss
+→ Backward 计算并累积 Gradient
+→ Optimizer Step 修改参数
+
+Cross-Entropy 关注 -log P(正确 Token)，
+不是预测 Token ID 与正确 Token ID 的数值距离。
+```
+
+```text
+推理若依赖训练后的 MTP 模块：
+参数参与 Loss
+→ 获得 Gradient
+→ 进入 Optimizer
+→ Optimizer Step 更新
+├── 持久化：Checkpoint 保存
+└── 在线推理：权重映射 → Weight Sync
+              → Rollout 使用新版本产生 Draft
+
+在线同步不要求先落盘 Checkpoint；
+Optimizer State 用于续训，不发送给 Rollout。
+```
+
+```text
 MTP 推理：
 当前正式状态
 → Draft 多个候选 token
@@ -115,6 +143,13 @@ MTP 推理：
 - 为什么用于得到 W6 的 Current Logprob 必须在参数更新前计算；
 - 为什么 Reference 通常对应 RL 起点策略，而不一定是原始预训练模型；
 - 为什么判断 RLVR 是否改善必须联看 Held-out 任务效果、KL 与训练健康；
+- 为什么 Causal Mask 阻止模型偷看未来，但训练程序仍能用未来 Token 作 Label；
+- NTP 与不同未来 Offset 的 MTP Label 怎样由同一 Token 序列移位得到；
+- 为什么 Cross-Entropy 不是 Token ID 之间的数值距离；
+- Forward、Loss、Backward 和 Optimizer 分别负责什么；
+- 为什么 `loss.backward()` 后、`optimizer.step()` 前权重通常还没变化；
+- 为什么 MTP 参数有 `.grad` 但不在 Optimizer 中仍不会更新；
+- 推理若使用 MTP Draft，相关参数必须怎样贯穿 Checkpoint、映射与 Weight Sync；
 - 为什么组内 Reward 全相同时，相对 Advantage 往往很弱；
 - 算法稳定性指标和系统性能指标有什么区别；
 - 二元 Reward 表示什么，为什么它不是所有任务的固定评分方式；
@@ -131,6 +166,7 @@ MTP 推理：
 | [LLM 普通模型 Baseline 前的基础理论](../notes/2026/07/基础理论_20260723.md) | 2026-07-23 | 2026-07-24 | 2026-07-26 | 2026-07-30 | 2026-08-06 | 2026-08-22 |
 | [从预训练到 RL 后训练：MTP 与状态管理基础](../notes/2026/07/训练与RL后训练基础_20260724.md) | 2026-07-24 | ✅ 2026-07-26 | 2026-07-27 | 2026-07-31 | 2026-08-07 | 2026-08-23 |
 | [RLVR 策略角色、Logprob 时序与训练诊断](../notes/2026/07/RLVR策略版本与训练诊断_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
+| [MTP Label、Loss 与参数更新](../notes/2026/07/MTP标签损失与参数更新_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
 
 完成复习后，可以把日期改成：
 
