@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-07-24
+> 最后更新：2026-07-26
 
 ## 开始新学习前
 
@@ -64,6 +64,26 @@ Checkpoint：保存或恢复训练状态
 ```
 
 ```text
+固定 Reference 示例：
+Reference W0
+Rollout W5 → Response + Old Logprob
+Actor W5 → Current Logprob → Loss → Backward/Optimizer → W6
+W6 Weight Sync → 下一批 Rollout
+
+Current Logprob 先进入 Loss，随后才得到 W6；
+Reference 通常是 RL 起点策略，不一定是原始预训练模型。
+```
+
+```text
+判断 RLVR 是否改善：
+Held-out 任务效果
++ Actor/Reference KL
++ Ratio、Clip Fraction、Entropy、Gradient、NaN/Inf
+
+训练 Reward 或 Policy Loss 单独变化都不能证明能力提升。
+```
+
+```text
 MTP 推理：
 当前正式状态
 → Draft 多个候选 token
@@ -90,6 +110,11 @@ MTP 推理：
 - Advantage 如何通过 Policy Loss、Backward 和 Optimizer 改变 token 概率；
 - PPO Clip 与 KL 约束分别限制哪两种偏移；
 - Trajectory 为什么需要 Token、Logprob、Mask、Reward 和权重版本；
+- 模型家族、Checkpoint 与 Actor/Reference/Rollout 三类运行角色如何区分；
+- 在 W0/W5/W6 示例中 Old、Reference、Current Logprob 的版本与因果时序；
+- 为什么用于得到 W6 的 Current Logprob 必须在参数更新前计算；
+- 为什么 Reference 通常对应 RL 起点策略，而不一定是原始预训练模型；
+- 为什么判断 RLVR 是否改善必须联看 Held-out 任务效果、KL 与训练健康；
 - 为什么组内 Reward 全相同时，相对 Advantage 往往很弱；
 - 算法稳定性指标和系统性能指标有什么区别；
 - 二元 Reward 表示什么，为什么它不是所有任务的固定评分方式；
@@ -104,7 +129,8 @@ MTP 推理：
 | 笔记 | 首次学习 | D+1 | D+3 | D+7 | D+14 | D+30 |
 |---|---|---|---|---|---|---|
 | [LLM 普通模型 Baseline 前的基础理论](../notes/2026/07/基础理论_20260723.md) | 2026-07-23 | 2026-07-24 | 2026-07-26 | 2026-07-30 | 2026-08-06 | 2026-08-22 |
-| [从预训练到 RL 后训练：MTP 与状态管理基础](../notes/2026/07/训练与RL后训练基础_20260724.md) | 2026-07-24 | 2026-07-25 | 2026-07-27 | 2026-07-31 | 2026-08-07 | 2026-08-23 |
+| [从预训练到 RL 后训练：MTP 与状态管理基础](../notes/2026/07/训练与RL后训练基础_20260724.md) | 2026-07-24 | ✅ 2026-07-26 | 2026-07-27 | 2026-07-31 | 2026-08-07 | 2026-08-23 |
+| [RLVR 策略角色、Logprob 时序与训练诊断](../notes/2026/07/RLVR策略版本与训练诊断_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
 
 完成复习后，可以把日期改成：
 
