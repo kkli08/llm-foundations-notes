@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-07-26
+> 最后更新：2026-07-27
 
 ## 按日期
 
@@ -88,7 +88,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO、GRPO 的完整数学推导与实现差异（Policy Ratio、Clip 与 KL 入门已覆盖）；
+- [P1 学习债务：PPO、GRPO 的完整数学与实现](inbox/2026-07-27.md#1425明确延期专题ppo-与-grpo)（入门已覆盖；不阻塞当前 MTP 主线，按触发条件回补）；
 - GDN、递归状态与混合 Attention 的具体实现。
 
 ## 索引维护规则

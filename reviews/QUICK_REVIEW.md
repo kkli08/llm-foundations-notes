@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-07-26
+> 最后更新：2026-07-27
 
 ## 开始新学习前
 
@@ -179,6 +179,18 @@ k × 小型 MTP + 1 × Target Block Verify
 - 为什么递归式 MTP Draft 即使串行，仍可能比重复运行完整 Target 便宜；
 - 为什么 MTP 上线后必须按 Batch/QPS、长度和 Sampling 做 off/on 分桶实测；
 - DP、TP、PP、EP、CP 分别切分什么。
+
+## 明确延期但不可遗忘
+
+### PPO / GRPO 专题
+
+当前状态：只掌握 Advantage、Policy Ratio、PPO Clip、KL 和训练健康指标的最低直觉，尚未系统
+学习公式与实现。
+
+当前决策：不让完整 PPO/GRPO 学习阻塞 Baseline 与 MTP 主线；完成一个有效训练 Step、开始阅读
+相关 Loss 代码，或出现至少 45 分钟等待窗口时回补。
+
+详细入口：[2026-07-27 PPO/GRPO 学习债务](../inbox/2026-07-27.md#1425明确延期专题ppo-与-grpo)。
 
 ## 间隔复习队列
 
