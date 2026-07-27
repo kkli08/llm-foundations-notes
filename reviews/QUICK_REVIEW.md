@@ -133,6 +133,47 @@ k × 小型 MTP + 1 × Target Block Verify
 “短块 Prefill-like”只描述候选已知后的 Verify。
 ```
 
+```text
+训练部署分层：
+本地入口
+→ 资源平台：机器、GPU、容器、存储
+→ Ray：Head/Worker、资源与进程调度
+→ 训练编排层：Rollout、Reward、Update、Sync
+├── Megatron：Forward / Backward / Optimizer
+└── vLLM：Prefill / Decode / Rollout
+
+平台 RUNNING ≠ Ray Ready ≠ 模型加载 ≠ Baseline 跑通。
+```
+
+```text
+一个外层 RLVR Step：
+一批 Prompt
+→ 每个 Prompt 生成多条 Response
+→ Reward / Reference / Actor Logprob
+→ Group Advantage
+→ Policy Loss / Backward / Optimizer
+→ Actor 新版本
+→ Weight Sync 给 Rollout
+
+1-Step 证明“产生并同步新权重”；
+2-Step 才继续证明“下一轮使用了新权重”。
+```
+
+```text
+Qwen3 MoE/MTP 最小架构：
+MoE = Router 在每层为每个 Token 选择 Top-K Expert FFN
+TP = 拆矩阵，EP = 拆 Expert，PP = 拆 Layer
+
+MTP 端到端支持：
+模型构建/加载
+→ Future Label 与 MTP Loss
+→ Checkpoint 保存恢复
+→ Megatron 到 vLLM 参数转换/同步
+→ Draft/Verify、Acceptance 与吞吐验证
+
+Load MTP、Train MTP、Rollout MTP 是三个相关但独立的语义。
+```
+
 ## 当前必会解释
 
 - Dense、MoE 和 baseline 分别是什么；
@@ -179,6 +220,22 @@ k × 小型 MTP + 1 × Target Block Verify
 - 为什么递归式 MTP Draft 即使串行，仍可能比重复运行完整 Target 便宜；
 - 为什么 MTP 上线后必须按 Batch/QPS、长度和 Sampling 做 off/on 分桶实测；
 - DP、TP、PP、EP、CP 分别切分什么。
+- 资源平台、Ray、训练编排层、Megatron 与 vLLM 分别负责什么；
+- 为什么平台任务 `RUNNING`、Ray Ready、模型加载和 Baseline 跑通是四级不同证据；
+- Baseline、Smoke、模型效果实验和系统性能实验怎样区分；
+- 为什么一个外层 RL Step 可以包含多条 Trajectory 和多次 Forward/Backward；
+- 为什么 1-Step 不能证明下一轮 Rollout 已使用新权重，而 2-Step 更有闭环验证价值；
+- 原始日志、SwanLab、Grafana、资源平台和 Profiler 的观测分工；
+- 为什么数据 Loader 成功仍不能证明 Reward 语义正确；
+- tmux、容器内临时日志与持久化存储的生命周期边界；
+- MoE 为什么是逐 Token、逐 Layer 路由，而不是按整个 Prompt 固定选择一个 Expert；
+- Dense/MoE 与 MHA/GQA/MQA 为什么是不同分类维度；
+- TP Shard、EP Local/Global Expert、PP Layer Offset 分别是什么；
+- HF Checkpoint、分布式 Checkpoint 和在线推理权重的区别；
+- Adapter、Bridge/mbridge 与 Converter 分别负责什么；
+- 为什么完整 MTP 支持至少包含构建、Loss、保存、同步和推理五个契约；
+- Load-only、Train-only、Rollout-only 与 Full MTP 的区别；
+- 为什么 MTP-off 向后兼容不只是“不报错”。
 
 ## 明确延期但不可遗忘
 
@@ -201,6 +258,8 @@ k × 小型 MTP + 1 × Target Block Verify
 | [RLVR 策略角色、Logprob 时序与训练诊断](../notes/2026/07/RLVR策略版本与训练诊断_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
 | [MTP Label、Loss 与参数更新](../notes/2026/07/MTP标签损失与参数更新_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
 | [MTP 推测解码：自回归串行、成块 Verify 与状态提交](../notes/2026/07/MTP推测解码与成块验证_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
+| [训练部署 Baseline 与 RLVR 单步闭环](../notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md) | 2026-07-27 | 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
+| [Qwen3 MoE 与 MTP 适配最小架构](../notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md) | 2026-07-27 | 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
 
 完成复习后，可以把日期改成：
 

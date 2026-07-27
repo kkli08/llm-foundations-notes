@@ -11,6 +11,8 @@
 - [2026-07-26：RLVR 策略角色、Logprob 时序与训练诊断](notes/2026/07/RLVR策略版本与训练诊断_20260726.md)
 - [2026-07-26：MTP Label、Loss 与参数更新](notes/2026/07/MTP标签损失与参数更新_20260726.md)
 - [2026-07-26：MTP 推测解码——自回归串行、成块 Verify 与状态提交](notes/2026/07/MTP推测解码与成块验证_20260726.md)
+- [2026-07-27：训练部署 Baseline 与 RLVR 单步闭环](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md)
+- [2026-07-27：Qwen3 MoE 与 MTP 适配最小架构](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md)
 
 ## 按主题
 
@@ -19,12 +21,24 @@
 - [Dense 模型、MoE 与 Baseline](notes/2026/07/基础理论_20260723.md#第一部分dense-模型与-baseline)
 - [第一条 Baseline 的实践清单](notes/2026/07/基础理论_20260723.md#第十一部分第一条-baseline-的实践清单)
 - [推理性能指标](notes/2026/07/基础理论_20260723.md#第十部分推理性能指标)
+- [资源平台、Ray、训练编排层、Megatron 与 vLLM](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#2-先把系统分层每层只回答一种问题)
+- [Baseline、Smoke、效果实验与性能实验](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#4-baselinesmoke效果实验和性能实验)
+- [Baseline 的分层成功证据](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#8-如何证明一次-baseline-真正跑通)
+- [日志、SwanLab、Grafana 与 Profiler 的分工](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#10-观测工具怎样分工)
 
 ### Transformer 基础
 
 - [Token、Tokenizer 与自回归生成](notes/2026/07/基础理论_20260723.md#第二部分tokentokenizer-与自回归生成)
 - [Transformer、Hidden State 与 FFN](notes/2026/07/基础理论_20260723.md#第三部分transformerhidden-state-与-ffn)
 - [Attention、Q/K/V 与各种 Head](notes/2026/07/基础理论_20260723.md#第四部分attentionqkv-与各种-head)
+
+### MoE 与模型适配
+
+- [Dense FFN 与 MoE FFN](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#2-从-dense-ffn-到-moe-ffn)
+- [Router 为什么逐 Token、逐 Layer 路由](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#23-router-是逐-token逐-layer-工作)
+- [TP、EP、PP 与 Local/Global 编号](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#3-tpeppp-在拆什么)
+- [HF Checkpoint、Megatron 与 vLLM 的参数世界](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#4-为什么同一模型会有三种参数世界)
+- [Adapter、Bridge、Converter 与参数 ABI](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#5-adapterbridge-与-converter)
 
 ### 推理流程
 
@@ -57,6 +71,11 @@
 - [Cross-Entropy 与正确 Token 概率](notes/2026/07/MTP标签损失与参数更新_20260726.md#3-cross-entropy-到底衡量什么)
 - [Forward、Loss、Backward 与 Optimizer](notes/2026/07/MTP标签损失与参数更新_20260726.md#4-forward-loss-backward-optimizer-的严格分工)
 - [MTP 参数的完整生命周期](notes/2026/07/MTP标签损失与参数更新_20260726.md#6-mtp-参数的完整生命周期)
+- [一个外层 RLVR Step 与多回答 Group](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#6-一个外层-rlvr-step-到底发生了什么)
+- [组内 Advantage 与二元 Reward](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#7-同一-prompt-的多回答与组内-advantage)
+- [MTP 完整支持的五个契约](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#7-完整-mtp-支持的五个契约)
+- [Load、Train、Rollout MTP 模式矩阵](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#8-为什么-mtp-要拆成-loadtrainrollout-三个开关)
+- [MTP-off 向后兼容](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#9-怎样保证向后兼容)
 
 ### 并行与状态管理
 
@@ -64,6 +83,8 @@
 - [训练与推理 Checkpoint](notes/2026/07/训练与RL后训练基础_20260724.md#26-checkpoint)
 - [训练和推理如何接起来](notes/2026/07/训练与RL后训练基础_20260724.md#10-与-2026-07-23-笔记的联系)
 - [Draft/Target Cache 与状态边界](notes/2026/07/MTP推测解码与成块验证_20260726.md#6-正式状态临时状态与-cache-所有权)
+- [tmux、临时日志与持久化边界](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#11-tmux临时文件与持久化存储)
+- [MTP 参数分片、全局编号与在线同步](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#74-契约四训练到推理的转换与在线同步)
 
 ### 快速复习
 
@@ -77,11 +98,13 @@
 - [MTP Label、Loss 与参数更新自测](notes/2026/07/MTP标签损失与参数更新_20260726.md#10-自测问题)
 - [MTP 推测解码一分钟复习](notes/2026/07/MTP推测解码与成块验证_20260726.md#12-一分钟复习)
 - [MTP 推测解码自测](notes/2026/07/MTP推测解码与成块验证_20260726.md#13-自测问题)
+- [训练部署 Baseline 一分钟复习与自测](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#15-一分钟复习)
+- [Qwen3 MoE/MTP 适配一分钟复习与自测](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#14-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
 
-- MoE、Router、Expert Parallel 与 All-to-All；
+- MoE、逐 Token Router、TP/EP/PP 与 Local/Global 编号已有任务所需入门；Load Balance Loss、All-to-All Kernel 和 EP 性能优化仍待深入；
 - Batch、并发与 Continuous Batching；
 - Tensor Parallel、Pipeline Parallel、Context Parallel 的通信与张量变化（入门分类已覆盖）；
 - RoPE 与长上下文扩展；
