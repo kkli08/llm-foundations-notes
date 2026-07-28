@@ -15,6 +15,7 @@
 - [2026-07-27：Qwen3 MoE 与 MTP 适配最小架构](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md)
 - [2026-07-28：Transformer 残差、MLP 与 MoE 路由](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md)
 - [2026-07-28：MTP Head 状态机与训练适配边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md)
+- [2026-07-28：从 RL Trajectory 到 Megatron——Packed Sequence、MTP Mask 与 Loss 归一化](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md)
 
 ## 按主题
 
@@ -89,6 +90,9 @@
 - [MTP Label、Mask 与 RL Total Loss](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#7-每个训练-step-怎样训练-mtp)
 - [`detach_encoder` 与梯度边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#8-detach_encoder-的梯度边界)
 - [MTP 与 Speculative Decoding 的关系](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#11-speculative-decoding-与-mtp-的关系)
+- [Trajectory、Packed Sequence 与训练 Tensor](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#3-trajectory-到训练-tensor-的对象变化)
+- [Segment-aware MTP Label 与 Mask](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#5-ntpmtp-label-与-segment-aware-mask)
+- [动态 Token Loss 归一化与三种 Scale](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#6-loss-reduction归约是什么意思)
 
 ### 并行与状态管理
 
@@ -99,6 +103,7 @@
 - [tmux、临时日志与持久化边界](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#11-tmux临时文件与持久化存储)
 - [MTP 参数分片、全局编号与在线同步](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#74-契约四训练到推理的转换与在线同步)
 - [MTP Training 与 CP>1 的跨 Rank 依赖](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#9-mtp-training-为什么容易和-cp1-冲突)
+- [DP、PP 与动态 Token Loss 所有权](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#9-dppp-与-loss-所有权的最低理解)
 
 ### 快速复习
 
@@ -116,12 +121,13 @@
 - [Qwen3 MoE/MTP 适配一分钟复习与自测](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#14-一分钟复习)
 - [Transformer/MoE 深化一分钟复习与自测](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#10-一分钟复习)
 - [MTP 训练适配一分钟复习与自测](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#16-一分钟复习)
+- [Trajectory、MTP Mask 与 Loss 归一化一分钟复习](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#13-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
 
 - MoE、Router Scores/Top-K/加权聚合、TP/EP/PP 与 Local/Global 编号已有任务所需入门；Router 梯度、Load Balance Loss、All-to-All Kernel 和 EP 性能优化仍待深入；
-- Batch、并发与 Continuous Batching；
+- Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；推理并发与 Continuous Batching 仍待深入；
 - Tensor Parallel、Pipeline Parallel、Context Parallel 的通信与张量变化（入门分类已覆盖；MTP+CP 的跨 Rank Future 依赖已有最小认知）；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；

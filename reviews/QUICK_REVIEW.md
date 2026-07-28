@@ -205,6 +205,33 @@ Megatron 负责分布式 Forward/Backward/Optimizer；
 vLLM 负责 Draft/Verify。
 ```
 
+```text
+RL 训练数据链：
+Trajectories
+→ Reward / Advantage / Masks
+→ 按有效 Token 做 DP 数据分配
+→ Padding 或 Segment-aware Packing
+→ input_ids [B,S]
+→ Microbatches
+→ 全局有效 Token numerator/count
+→ Megatron Forward/Backward/Optimizer
+
+Ray Head 管集群，不等于训练数据协调角色。
+Packed Tensor 的物理相邻不等于同一逻辑序列；
+MTP 多步 Label 不能跨 Segment 全局 roll。
+```
+
+```text
+三种 Scale：
+λ_mtp：算法超参数，改变 MTP 辅助目标权重
+Token/Microbatch Weight：动态长度下保证全局 Token 平均
+Optimizer Loss Scale：低精度数值稳定，更新前还原
+
+MTP Block 的 Dense/MoE 是训练模型结构；
+Draft/Verify 是推理职责；
+vLLM proposer 必须与 checkpoint 同构。
+```
+
 ## 当前必会解释
 
 - Dense、MoE 和 baseline 分别是什么；
@@ -280,6 +307,15 @@ vLLM 负责 Draft/Verify。
 - `detach_encoder=true` 为什么只阻断 MTP Loss 到主干的梯度，而不等于冻结主干；
 - 为什么 MTP + CP>1 会产生跨 Rank Future Label/Embedding 依赖；
 - 为什么 MTP 是 Speculative Decoding 的一种 Proposer，而二者不能画等号。
+- 为什么 Ray Head、DP 数据协调角色和 Megatron 训练 Engine 是三个不同层次；
+- `[B,S]` 分别表示什么，Packed Sequence 为什么仍需保存 Segment Boundary；
+- 为什么 MTP-1/MTP-2 分别对应固定 `t+2`/`t+3`，而不是一个位置预测所有未来 Token；
+- 为什么 `mtp_loss_mask` 不只处理 Padding，还要处理 Prompt、Segment 尾部、越界和跨样本 Shift；
+- 为什么动态长度 RL Batch 不能简单平均每个 Microbatch 的平均 Loss；
+- Loss Reduction/归约是什么意思，numerator/count 为什么要跨 DP 汇总；
+- `λ_mtp`、Token/Microbatch Weight 和 Optimizer Loss Scale 的差别；
+- 混合精度为什么同时使用 BF16/FP16 与 FP32，Loss Scaling 为什么不改变训练目标；
+- 为什么 MTP Block 的 Dense/MoE 结构不能由推理后端临时选择。
 
 ## 明确延期但不可遗忘
 
@@ -306,6 +342,7 @@ vLLM 负责 Draft/Verify。
 | [Qwen3 MoE 与 MTP 适配最小架构](../notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md) | 2026-07-27 | ✅ 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
 | [Transformer 残差、MLP 与 MoE 路由](../notes/2026/07/Transformer残差MLP与MoE路由_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 | [MTP Head 状态机与训练适配边界](../notes/2026/07/MTPHead状态机与训练适配边界_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
+| [从 RL Trajectory 到 Megatron：Packed Sequence、MTP Mask 与 Loss 归一化](../notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 
 完成复习后，可以把日期改成：
 

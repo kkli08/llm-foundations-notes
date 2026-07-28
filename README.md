@@ -19,6 +19,7 @@
 - [2026-07-26：RLVR 策略角色、Logprob 时序与训练诊断](notes/2026/07/RLVR策略版本与训练诊断_20260726.md)
 - [2026-07-26：MTP Label、Loss 与参数更新](notes/2026/07/MTP标签损失与参数更新_20260726.md)
 - [2026-07-26：MTP 推测解码——自回归串行、成块 Verify 与状态提交](notes/2026/07/MTP推测解码与成块验证_20260726.md)
+- [2026-07-28：从 RL Trajectory 到 Megatron——Packed Sequence、MTP Mask 与 Loss 归一化](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md)
 
 ## 推荐使用方式
 
