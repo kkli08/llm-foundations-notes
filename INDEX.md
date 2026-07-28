@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-07-27
+> 最后更新：2026-07-28
 
 ## 按日期
 
@@ -13,6 +13,8 @@
 - [2026-07-26：MTP 推测解码——自回归串行、成块 Verify 与状态提交](notes/2026/07/MTP推测解码与成块验证_20260726.md)
 - [2026-07-27：训练部署 Baseline 与 RLVR 单步闭环](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md)
 - [2026-07-27：Qwen3 MoE 与 MTP 适配最小架构](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md)
+- [2026-07-28：Transformer 残差、MLP 与 MoE 路由](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md)
+- [2026-07-28：MTP Head 状态机与训练适配边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md)
 
 ## 按主题
 
@@ -31,6 +33,9 @@
 - [Token、Tokenizer 与自回归生成](notes/2026/07/基础理论_20260723.md#第二部分tokentokenizer-与自回归生成)
 - [Transformer、Hidden State 与 FFN](notes/2026/07/基础理论_20260723.md#第三部分transformerhidden-state-与-ffn)
 - [Attention、Q/K/V 与各种 Head](notes/2026/07/基础理论_20260723.md#第四部分attentionqkv-与各种-head)
+- [Residual：原表示加子层修正](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#2-residual-残差连接是什么)
+- [MLP、FFN 与 Gated MLP](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#3-mlp-与-ffn-是什么)
+- [Hidden State、Logits 与 Token 的层级](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#7-训练侧与推理侧怎样使用最终-hidden-state)
 
 ### MoE 与模型适配
 
@@ -39,6 +44,9 @@
 - [TP、EP、PP 与 Local/Global 编号](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#3-tpeppp-在拆什么)
 - [HF Checkpoint、Megatron 与 vLLM 的参数世界](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#4-为什么同一模型会有三种参数世界)
 - [Adapter、Bridge、Converter 与参数 ABI](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#5-adapterbridge-与-converter)
+- [Router Top-K、Expert 计算与加权聚合](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#5-router-怎样选择-top-k-expert)
+- [Qwen3 系列、架构子家族与具体模型规格](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#8-qwenqwen3qwen3-30b-a3b-的层级关系)
+- [Model Adapter 的职责与训练边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#4-model-adapter-到底负责什么)
 
 ### 推理流程
 
@@ -76,6 +84,11 @@
 - [MTP 完整支持的五个契约](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#7-完整-mtp-支持的五个契约)
 - [Load、Train、Rollout MTP 模式矩阵](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#8-为什么-mtp-要拆成-loadtrainrollout-三个开关)
 - [MTP-off 向后兼容](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#9-怎样保证向后兼容)
+- [MTP Head 不一定只是 Linear Head](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#1-mtp-head-不一定只是一个-linear-head)
+- [MTP Off、Load、Init 与 Train/Rollout 状态机](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#3-offload-与-init模型构建状态机)
+- [MTP Label、Mask 与 RL Total Loss](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#7-每个训练-step-怎样训练-mtp)
+- [`detach_encoder` 与梯度边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#8-detach_encoder-的梯度边界)
+- [MTP 与 Speculative Decoding 的关系](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#11-speculative-decoding-与-mtp-的关系)
 
 ### 并行与状态管理
 
@@ -85,6 +98,7 @@
 - [Draft/Target Cache 与状态边界](notes/2026/07/MTP推测解码与成块验证_20260726.md#6-正式状态临时状态与-cache-所有权)
 - [tmux、临时日志与持久化边界](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#11-tmux临时文件与持久化存储)
 - [MTP 参数分片、全局编号与在线同步](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#74-契约四训练到推理的转换与在线同步)
+- [MTP Training 与 CP>1 的跨 Rank 依赖](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#9-mtp-training-为什么容易和-cp1-冲突)
 
 ### 快速复习
 
@@ -100,13 +114,15 @@
 - [MTP 推测解码自测](notes/2026/07/MTP推测解码与成块验证_20260726.md#13-自测问题)
 - [训练部署 Baseline 一分钟复习与自测](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#15-一分钟复习)
 - [Qwen3 MoE/MTP 适配一分钟复习与自测](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#14-一分钟复习)
+- [Transformer/MoE 深化一分钟复习与自测](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#10-一分钟复习)
+- [MTP 训练适配一分钟复习与自测](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#16-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
 
-- MoE、逐 Token Router、TP/EP/PP 与 Local/Global 编号已有任务所需入门；Load Balance Loss、All-to-All Kernel 和 EP 性能优化仍待深入；
+- MoE、Router Scores/Top-K/加权聚合、TP/EP/PP 与 Local/Global 编号已有任务所需入门；Router 梯度、Load Balance Loss、All-to-All Kernel 和 EP 性能优化仍待深入；
 - Batch、并发与 Continuous Batching；
-- Tensor Parallel、Pipeline Parallel、Context Parallel 的通信与张量变化（入门分类已覆盖）；
+- Tensor Parallel、Pipeline Parallel、Context Parallel 的通信与张量变化（入门分类已覆盖；MTP+CP 的跨 Rank Future 依赖已有最小认知）；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；

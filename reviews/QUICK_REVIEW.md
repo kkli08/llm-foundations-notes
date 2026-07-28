@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-07-27
+> 最后更新：2026-07-28
 
 ## 开始新学习前
 
@@ -174,6 +174,37 @@ MTP 端到端支持：
 Load MTP、Train MTP、Rollout MTP 是三个相关但独立的语义。
 ```
 
+```text
+一层 Pre-Norm Transformer：
+y = x + Attention(Norm(x))
+z = y + MLP或MoE(Norm(y))
+
+Attention 跨 Token 汇聚信息；
+MLP/FFN 加工每个 Token 的当前表示；
+Residual 保留原表示并叠加子层修正。
+
+MoE Top-K：
+Hidden State → Router Scores → Top-K Expert MLP
+→ 选中 Expert 输出加权聚合 → Residual
+
+一层只输出新的 Hidden State；
+所有层结束后，LM Head 才产生词表 Logits。
+```
+
+```text
+MTP 构建状态：
+Off：不构建
+Load：Checkpoint 有兼容 MTP，严格加载
+Init：Checkpoint 无 MTP，只新增并初始化预期模块
+
+运行用途再独立决定：Train MTP? / Rollout MTP?
+
+Model Adapter 负责模型特定构建、加载/初始化和参数映射；
+通用训练路径负责 Label/Mask/Loss；
+Megatron 负责分布式 Forward/Backward/Optimizer；
+vLLM 负责 Draft/Verify。
+```
+
 ## 当前必会解释
 
 - Dense、MoE 和 baseline 分别是什么；
@@ -236,6 +267,19 @@ Load MTP、Train MTP、Rollout MTP 是三个相关但独立的语义。
 - 为什么完整 MTP 支持至少包含构建、Loss、保存、同步和推理五个契约；
 - Load-only、Train-only、Rollout-only 与 Full MTP 的区别；
 - 为什么 MTP-off 向后兼容不只是“不报错”。
+- Residual 为什么是“原表示 + 子层修正”，它怎样帮助深层训练；
+- MLP/FFN、Gated MLP Gate 与 MoE Router 分别是什么；
+- Router 选中 Top-K 后，为什么 K 个 Expert 都参与并加权聚合；
+- 为什么 MoE Layer 输出 Hidden State，而不是自然语言 Token；
+- Qwen3 系列、Qwen3 MoE 架构子家族和 Qwen3-30B-A3B 具体规格怎样区分；
+- MTP Head 为什么不一定只是 Linear Head；
+- Checkpoint 能力事实与 YAML 运行意图为什么必须分开；
+- MTP Off、Load Existing、Init New 与 Train/Rollout 怎样组合；
+- 为什么新增 MTP Module 必须在 DDP/Optimizer 创建之前完成；
+- 为什么不能用全模型 `strict=False` 掩盖源 Checkpoint 没有 MTP；
+- `detach_encoder=true` 为什么只阻断 MTP Loss 到主干的梯度，而不等于冻结主干；
+- 为什么 MTP + CP>1 会产生跨 Rank Future Label/Embedding 依赖；
+- 为什么 MTP 是 Speculative Decoding 的一种 Proposer，而二者不能画等号。
 
 ## 明确延期但不可遗忘
 
@@ -258,8 +302,10 @@ Load MTP、Train MTP、Rollout MTP 是三个相关但独立的语义。
 | [RLVR 策略角色、Logprob 时序与训练诊断](../notes/2026/07/RLVR策略版本与训练诊断_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
 | [MTP Label、Loss 与参数更新](../notes/2026/07/MTP标签损失与参数更新_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
 | [MTP 推测解码：自回归串行、成块 Verify 与状态提交](../notes/2026/07/MTP推测解码与成块验证_20260726.md) | 2026-07-26 | 2026-07-27 | 2026-07-29 | 2026-08-02 | 2026-08-09 | 2026-08-25 |
-| [训练部署 Baseline 与 RLVR 单步闭环](../notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md) | 2026-07-27 | 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
-| [Qwen3 MoE 与 MTP 适配最小架构](../notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md) | 2026-07-27 | 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
+| [训练部署 Baseline 与 RLVR 单步闭环](../notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md) | 2026-07-27 | ✅ 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
+| [Qwen3 MoE 与 MTP 适配最小架构](../notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md) | 2026-07-27 | ✅ 2026-07-28 | 2026-07-30 | 2026-08-03 | 2026-08-10 | 2026-08-26 |
+| [Transformer 残差、MLP 与 MoE 路由](../notes/2026/07/Transformer残差MLP与MoE路由_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
+| [MTP Head 状态机与训练适配边界](../notes/2026/07/MTPHead状态机与训练适配边界_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 
 完成复习后，可以把日期改成：
 
