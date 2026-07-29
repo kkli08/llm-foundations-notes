@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-07-28
+> 最后更新：2026-07-29
 
 ## 按日期
 
@@ -16,6 +16,7 @@
 - [2026-07-28：Transformer 残差、MLP 与 MoE 路由](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md)
 - [2026-07-28：MTP Head 状态机与训练适配边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md)
 - [2026-07-28：从 RL Trajectory 到 Megatron——Packed Sequence、MTP Mask 与 Loss 归一化](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md)
+- [2026-07-29：MTP 模型状态流与在线权重事务](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md)
 
 ## 按主题
 
@@ -48,6 +49,7 @@
 - [Router Top-K、Expert 计算与加权聚合](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#5-router-怎样选择-top-k-expert)
 - [Qwen3 系列、架构子家族与具体模型规格](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#8-qwenqwen3qwen3-30b-a3b-的层级关系)
 - [Model Adapter 的职责与训练边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#4-model-adapter-到底负责什么)
+- [Adapter、Converter 与 Loader 的状态流职责](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#5-adapterconverter-和-loader-的职责)
 
 ### 推理流程
 
@@ -93,6 +95,7 @@
 - [Trajectory、Packed Sequence 与训练 Tensor](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#3-trajectory-到训练-tensor-的对象变化)
 - [Segment-aware MTP Label 与 Mask](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#5-ntpmtp-label-与-segment-aware-mask)
 - [动态 Token Loss 归一化与三种 Scale](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#6-loss-reduction归约是什么意思)
+- [DCP、HF Export 与 Online Weight Sync](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#3-dcphf-checkpoint-和-online-weights-的区别)
 
 ### 并行与状态管理
 
@@ -104,6 +107,10 @@
 - [MTP 参数分片、全局编号与在线同步](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#74-契约四训练到推理的转换与在线同步)
 - [MTP Training 与 CP>1 的跨 Rank 依赖](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#9-mtp-training-为什么容易和-cp1-冲突)
 - [DP、PP 与动态 Token Loss 所有权](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#9-dppp-与-loss-所有权的最低理解)
+- [模型状态的五类对象](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#2-一份模型状态不只有-tensor)
+- [Exact-set 参数完整性门禁](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#6-exact-set-gate怎样证明参数真的完整流转)
+- [在线权重版本事务与 Fail-closed](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#7-在线同步的版本事务)
+- [Structure Hash 与 Value Checksum](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#10-structure-hash-与-value-checksum)
 
 ### 快速复习
 
@@ -122,6 +129,7 @@
 - [Transformer/MoE 深化一分钟复习与自测](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#10-一分钟复习)
 - [MTP 训练适配一分钟复习与自测](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#16-一分钟复习)
 - [Trajectory、MTP Mask 与 Loss 归一化一分钟复习](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#13-一分钟复习)
+- [MTP 状态流与在线权重事务一分钟复习](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#13-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题

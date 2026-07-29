@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-07-28
+> 最后更新：2026-07-29
 
 ## 开始新学习前
 
@@ -206,6 +206,26 @@ vLLM 负责 Draft/Verify。
 ```
 
 ```text
+MTP 模型状态流：
+Optimizer Step 后的 Backbone + MTP
+├── DCP：模型 + Optimizer + Scheduler + RNG，用于续训
+├── HF Export：Effective Config + Weights + Index，用于重建
+└── Online Sync：推理权重 + Manifest + Version，用于更新 Rollout
+
+参数完整性：
+expected = converted = received = applied
+
+在线事务：
+Prepare → Pause → Transfer → Validate → Commit → Resume
+
+失败时不 Commit、不 Resume；
+Fail-closed 保证请求看不到混合权重，不等于 Tensor 自动回滚。
+
+Structure Hash 检查模型结构；
+Value Checksum 检查参数数值。
+```
+
+```text
 RL 训练数据链：
 Trajectories
 → Reward / Advantage / Masks
@@ -316,6 +336,14 @@ vLLM proposer 必须与 checkpoint 同构。
 - `λ_mtp`、Token/Microbatch Weight 和 Optimizer Loss Scale 的差别；
 - 混合精度为什么同时使用 BF16/FP16 与 FP32，Loss Scaling 为什么不改变训练目标；
 - 为什么 MTP Block 的 Dense/MoE 结构不能由推理后端临时选择。
+- DCP、HF Checkpoint 和 Online Weights 分别服务什么，为什么不能互相替代；
+- Effective Config、Manifest、Tensor、Training State 和 Version State 分别解决什么问题；
+- 为什么参数转换需要恢复 TP Shape、PP Layer ID 和 EP Expert ID，而不只是修改 Key；
+- `expected = converted = received = applied` 四个集合分别是什么；
+- 为什么 RPC 成功或版本号变化不能单独证明 MTP 权重已生效；
+- Prepare、Pause、Transfer、Validate、Commit、Resume 的顺序为什么不能交换；
+- Fail-closed 可见性与 Tensor Rollback 有什么区别；
+- Completion Marker、Structure Hash 和 Value Checksum 分别验证什么。
 
 ## 明确延期但不可遗忘
 
@@ -343,6 +371,7 @@ vLLM proposer 必须与 checkpoint 同构。
 | [Transformer 残差、MLP 与 MoE 路由](../notes/2026/07/Transformer残差MLP与MoE路由_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 | [MTP Head 状态机与训练适配边界](../notes/2026/07/MTPHead状态机与训练适配边界_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 | [从 RL Trajectory 到 Megatron：Packed Sequence、MTP Mask 与 Loss 归一化](../notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
+| [MTP 模型状态流与在线权重事务](../notes/2026/07/MTP模型状态流与在线权重事务_20260729.md) | 2026-07-29 | 2026-07-30 | 2026-08-01 | 2026-08-05 | 2026-08-12 | 2026-08-28 |
 
 完成复习后，可以把日期改成：
 
