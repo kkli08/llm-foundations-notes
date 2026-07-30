@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-07-29
+> 最后更新：2026-07-30
 
 ## 按日期
 
@@ -17,6 +17,7 @@
 - [2026-07-28：MTP Head 状态机与训练适配边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md)
 - [2026-07-28：从 RL Trajectory 到 Megatron——Packed Sequence、MTP Mask 与 Loss 归一化](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md)
 - [2026-07-29：MTP 模型状态流与在线权重事务](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md)
+- [2026-07-30：Qwen3-MoE 外挂 Native MTP 模块结构](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md)
 
 ## 按主题
 
@@ -88,6 +89,8 @@
 - [Load、Train、Rollout MTP 模式矩阵](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#8-为什么-mtp-要拆成-loadtrainrollout-三个开关)
 - [MTP-off 向后兼容](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#9-怎样保证向后兼容)
 - [MTP Head 不一定只是 Linear Head](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#1-mtp-head-不一定只是一个-linear-head)
+- [Qwen3-MoE Native MTP 的 Fusion、Decoder Block 与共享 LM Head](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md#3-每一步的输入shape-和作用)
+- [Qwen3-MoE MTP 专属参数、共享参数与梯度边界](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md#4-哪些参数新增哪些参数共享)
 - [MTP Off、Load、Init 与 Train/Rollout 状态机](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#3-offload-与-init模型构建状态机)
 - [MTP Label、Mask 与 RL Total Loss](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#7-每个训练-step-怎样训练-mtp)
 - [`detach_encoder` 与梯度边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#8-detach_encoder-的梯度边界)

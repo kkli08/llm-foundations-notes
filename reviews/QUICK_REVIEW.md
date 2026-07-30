@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-07-29
+> 最后更新：2026-07-30
 
 ## 开始新学习前
 
@@ -203,6 +203,20 @@ Model Adapter 负责模型特定构建、加载/初始化和参数映射；
 通用训练路径负责 Label/Mask/Loss；
 Megatron 负责分布式 Forward/Backward/Optimizer；
 vLLM 负责 Draft/Verify。
+```
+
+```text
+Qwen3-MoE 一层 Native MTP：
+h_t ─ hnorm ─┐
+              ├─ concat[2H] → Projection[H]
+E(x_t+1)─enorm┘
+→ 一层 Qwen3-MoE MTP Transformer Layer
+→ Final Norm → 共享 LM Head → x_t+2 Logits
+
+两路输入不是直接相加；
+MTP 专属参数需要初始化/加载和训练；
+默认 detach 只阻断 MTP Loss 到 Backbone 的梯度；
+训练与推理必须使用同构模块和同版本参数。
 ```
 
 ```text
