@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-07-30
+> 最后更新：2026-07-31
 
 ## 按日期
 
@@ -18,6 +18,7 @@
 - [2026-07-28：从 RL Trajectory 到 Megatron——Packed Sequence、MTP Mask 与 Loss 归一化](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md)
 - [2026-07-29：MTP 模型状态流与在线权重事务](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md)
 - [2026-07-30：Qwen3-MoE 外挂 Native MTP 模块结构](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md)
+- [2026-07-31：Qwen3.5 混合架构与 Gated DeltaNet（GDN）领读](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md)
 
 ## 按主题
 
@@ -39,6 +40,7 @@
 - [Residual：原表示加子层修正](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#2-residual-残差连接是什么)
 - [MLP、FFN 与 Gated MLP](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#3-mlp-与-ffn-是什么)
 - [Hidden State、Logits 与 Token 的层级](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#7-训练侧与推理侧怎样使用最终-hidden-state)
+- [从 Full Attention 到 Linear Attention、DeltaNet 与 GDN](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#2-为什么要从-full-attention-改造)
 
 ### MoE 与模型适配
 
@@ -51,6 +53,7 @@
 - [Qwen3 系列、架构子家族与具体模型规格](notes/2026/07/Transformer残差MLP与MoE路由_20260728.md#8-qwenqwen3qwen3-30b-a3b-的层级关系)
 - [Model Adapter 的职责与训练边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#4-model-adapter-到底负责什么)
 - [Adapter、Converter 与 Loader 的状态流职责](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#5-adapterconverter-和-loader-的职责)
+- [Qwen3.5 的 GDN/Full Attention、MoE 与 MTP 四维架构](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#1-先看清-qwen35-35b-a3b-的四个维度)
 
 ### 推理流程
 
@@ -64,6 +67,7 @@
 - [最长接受前缀与 Target 状态提交](notes/2026/07/MTP推测解码与成块验证_20260726.md#5-为什么只能接受最长有效前缀)
 - [递归式 MTP Draft 与实际成本](notes/2026/07/MTP推测解码与成块验证_20260726.md#81-一种递归式原生-mtp-draft)
 - [KV Cache、递归状态与混合 Attention](notes/2026/07/训练与RL后训练基础_20260724.md#8-从-kv-cache-扩展到通用模型状态)
+- [GDN 递归状态、Full Attention KV Cache 与混合 Cache](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#7-递归状态与-kv-cache-到底有什么不同)
 
 ### 训练与后训练
 
@@ -99,6 +103,7 @@
 - [Segment-aware MTP Label 与 Mask](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#5-ntpmtp-label-与-segment-aware-mask)
 - [动态 Token Loss 归一化与三种 Scale](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#6-loss-reduction归约是什么意思)
 - [DCP、HF Export 与 Online Weight Sync](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#3-dcphf-checkpoint-和-online-weights-的区别)
+- [Qwen3.5 GDN 的 Training、Prefill、Decode 与 MTP 状态边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#9-trainingprefilldecode-都使用这套架构)
 
 ### 并行与状态管理
 
@@ -114,6 +119,7 @@
 - [Exact-set 参数完整性门禁](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#6-exact-set-gate怎样证明参数真的完整流转)
 - [在线权重版本事务与 Fail-closed](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#7-在线同步的版本事务)
 - [Structure Hash 与 Value Checksum](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#10-structure-hash-与-value-checksum)
+- [Qwen3.5 混合状态机与 MTP 提交边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#10-gdn-与-qwen35-mtp-的关系)
 
 ### 快速复习
 
@@ -133,6 +139,7 @@
 - [MTP 训练适配一分钟复习与自测](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#16-一分钟复习)
 - [Trajectory、MTP Mask 与 Loss 归一化一分钟复习](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#13-一分钟复习)
 - [MTP 状态流与在线权重事务一分钟复习](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#13-一分钟复习)
+- [Gated DeltaNet 与 Qwen3.5 一分钟复习](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#15-一分钟复习卡)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
@@ -145,7 +152,7 @@
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
 - [P1 学习债务：PPO、GRPO 的完整数学与实现](inbox/2026-07-27.md#1425明确延期专题ppo-与-grpo)（入门已覆盖；不阻塞当前 MTP 主线，按触发条件回补）；
-- GDN、递归状态与混合 Attention 的具体实现。
+- GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
 
