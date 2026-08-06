@@ -776,14 +776,32 @@ MTP Off/On 之间原则上只改变 MTP/Speculative Decoding 相关开关。
 
 ## 10. PyTorch Profiler + Perfetto 的微观分析
 
-### 10.1 两段核心开销
+### 10.1 四个阶段与两类核心开销
 
-#### A. Draft 与 Target Verify
+一次 MTP Decode Iteration 最好拆成四段：
+
+```text
+MTP Draft Forward
+→ Draft Token Sampling
+→ Target Verify
+→ Acceptance / Rejection
+```
+
+其中负责人常关心的两类核心开销是：
+
+#### A. Draft/Sample 新增开销
 
 关注：
 
 - MTP Layer/Head 的额外耗时；
 - 大 Vocabulary LM Head Projection；
+- 从 Draft Logits 选出候选 Token 的 Sampling；
+- Draft 深度增加后 Tensor Shape 如何变化。
+
+#### B. Target Verify 新增开销
+
+关注：
+
 - Target 成块 Verify 的耗时；
 - 候选数增加后 Tensor Shape 如何变化；
 - 单次 Verify Duration 与每次最终提交 Token 数。
@@ -796,9 +814,9 @@ MTP Off/On 之间原则上只改变 MTP/Speculative Decoding 相关开关。
 {\text{本次最终提交 Token 数}}
 \]
 
-#### B. Accept/Sample 与状态管理
+Acceptance/Rejection 应与 Target Verify 分开统计。Verify 负责计算候选位置的 Target 结果；Acceptance/Rejection 负责比较候选、选择最长有效前缀，并提交或丢弃相应状态。
 
-关注：
+状态管理还需关注：
 
 - Rejection Sampling / Greedy Verify；
 - Draft 候选校验；
@@ -821,7 +839,55 @@ MTP Off/On 之间原则上只改变 MTP/Speculative Decoding 相关开关。
 - 必要时使用 Graph Annotation/NVTX 恢复业务区间语义；
 - 对照一次 Eager Trace，避免 Graph Replay 把算子归因压缩得难以理解。
 
-### 10.3 推荐归因表
+### 10.3 CUDA Graph、Kernel、Bucket 与 Profiler 的分工
+
+四个概念不能混在一起：
+
+| 对象 | 作用 | 不负责什么 |
+|---|---|---|
+| CUDA Kernel | 在 GPU 上执行一段张量计算 | Token 不是 Kernel 的固定执行单位 |
+| CUDA Graph | 录制固定形状下的一串 Kernel 与依赖，随后低开销重放 | 不负责监测、计时或理解 Draft/Verify 语义 |
+| Capture Bucket | 声明预录制的总 Token Slot 形状 | 不表示“第几个 Token”，也不天然表示 Draft/Verify 阶段 |
+| Profiler | 记录 CPU Op、CUDA Kernel、Graph Replay 与耗时 | 不会自动知道某组 Kernel 属于哪个业务阶段 |
+
+大模型一次 Forward 会触发多类 Kernel，例如 GEMM、Attention/GDN、Norm、MoE Router/Expert、Logits Projection 和 Sampling。一个 Kernel 通常处理包含多个 Token Slot、Head 和 Hidden Dimension 的张量；不能理解成“一个 Token 对应一个 Kernel”。
+
+以单请求、投机深度 `K=2` 为例，Target Verify 的均匀 Decode 形状通常是：
+
+```text
+BS = 1
+K = 2
+→ K + 1 = 3 个 Token Slots
+→ 一次 [3, hidden_size] 级别的 Forward
+→ 多个 CUDA Kernels
+```
+
+此时只有 Bucket 1 不代表运行时会把 3 个 Token 拆成三次 Graph-1。框架通常先把 Spec Decode Capture Size 对齐到 `K+1` 的倍数；没有合法形状时会拒绝配置或退回其他执行模式。只有 Bucket 6 时，3 个实际 Slot 可能 Padding 到 6 后重放 Graph-6，但不会因为实际输入是 3 就自动生成 Graph-3。
+
+Profiler 会自动抓全执行事件，但阶段归因仍需要语义边界。推荐顺序是：
+
+1. 先使用框架已有的 Range、Module Path 和 Graph Shape；
+2. 如果仍不能区分，在调用边界增加最小 `record_function`/NVTX 标签；
+3. 使用 `MTP_DRAFT_FORWARD`、`MTP_DRAFT_SAMPLE`、`TARGET_VERIFY_FORWARD`、`ACCEPT_REJECT` 四段；
+4. 不逐个 Kernel 猜业务阶段，也不直接把 Graph-1/Graph-3 等同于 Draft/Verify。
+
+两类增量开销可以按下面口径计算：
+
+\[
+T_{\text{verifier-delta}}
+=T_{\text{target-verify,on}}
+-T_{\text{target-decode,off}}
+\]
+
+\[
+T_{\text{draft/sample}}
+=T_{\text{draft-forward}}
++T_{\text{draft-sampling}}
+\]
+
+Acceptance/Rejection 与 Cache/State Commit 单独列出，避免把不同职责混成一个数字。
+
+### 10.4 推荐归因表
 
 | 区间 | MTP Off | MTP On | Delta | 每最终 Token Delta | 解释 |
 |---|---:|---:|---:|---:|---|
@@ -932,6 +998,7 @@ MTP Off / On
 6. 小 Local Batch Decode 常更偏带宽受限，MTP 更容易摊薄 Target 调用；大 Batch 下额外计算更容易显性化。
 7. MTP 加速必须联看 Output TPS、TPOT、Acceptance Length、Draft/Verify/State 成本，不能只看 Acceptance Rate。
 8. Benchmark 先预热到稳态、固定实际工作量、正确处理 CUDA 异步，并把正式测速与 Profiler 分开。
+9. CUDA Graph 负责固定形状的 Kernel 录制与重放；Profiler 负责观测，Bucket 只描述 Token Slot 形状，三者都不会自动表达 Draft/Verify 业务语义。
 
 ---
 
@@ -1001,6 +1068,18 @@ MTP 的 Draft、额外词表投影、Verify、Sampling 和状态管理成本更�
 最大化单位时间产生并消费的有效新鲜样本。
 ```
 
+### 问题 7：CUDA Graph、Bucket 与 Profiler 分别负责什么？
+
+期望回答：
+
+```text
+CUDA Graph 录制并重放固定形状的一串 GPU Kernel；
+Bucket 指定预捕获的总 Token Slot 形状；
+Profiler 记录执行事件与耗时。
+Profiler 能抓到 Kernel，但不会天然理解 Draft、Verify 或 Accept，
+需要依靠已有调用范围、模块路径或最小语义标签完成归因。
+```
+
 ---
 
 ## 15. 后续学习路线
@@ -1023,6 +1102,8 @@ MTP 的 Draft、额外词表投影、Verify、Sampling 和状态管理成本更�
 - [Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/abs/2302.01318)
 - [NVIDIA GPU Performance Background](https://docs.nvidia.com/deeplearning/performance/pdf/GPU-Performance-Background-User-Guide.pdf)
 - [PyTorch CUDA Semantics：异步执行与精确计时](https://docs.pytorch.org/docs/main/notes/cuda.html)
+- [vLLM 0.19.1：Spec Decode CUDA Graph Capture Size 对齐](https://github.com/vllm-project/vllm/blob/v0.19.1/vllm/config/compilation.py#L1132-L1173)
+- [vLLM 0.19.1：均匀 Decode 的 K+1 Token Shape](https://github.com/vllm-project/vllm/blob/v0.19.1/vllm/v1/worker/gpu_model_runner.py#L725)
 - [PyTorch Benchmark Recipe](https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html)
 - [PyTorch Profiler Recipe](https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html)
 - [PyTorch CUDA Graph Kernel Annotations and Profiling](https://docs.pytorch.org/tutorials/advanced/cuda_graph_annotations_tutorial.html)

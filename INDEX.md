@@ -37,6 +37,7 @@
 - [日志、SwanLab、Grafana 与 Profiler 的分工](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#10-观测工具怎样分工)
 - [MTP Benchmark 防污染与 Fast PoC 矩阵](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#9-benchmark-防污染原则)
 - [PyTorch Profiler 与 Perfetto 的 MTP 微观归因](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#10-pytorch-profiler--perfetto-的微观分析)
+- [CUDA Graph、Kernel、Bucket 与 Profiler 的分工](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#103-cuda-graphkernelbucket-与-profiler-的分工)
 
 ### Transformer 基础
 
