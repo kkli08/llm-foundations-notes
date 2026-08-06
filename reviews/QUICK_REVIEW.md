@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-07-30
+> 最后更新：2026-08-06
 
 ## 开始新学习前
 
@@ -266,6 +266,51 @@ Draft/Verify 是推理职责；
 vLLM proposer 必须与 checkpoint 同构。
 ```
 
+```text
+Logprob：
+logp(token) = log_softmax(logits)[token]
+
+Sequence Logprob = 各条件 Token Logprob 之和
+Cross-Entropy(token) = -logp(正确 token)
+
+PPO/GRPO Ratio：
+ratio = exp(current_logp - old/prox_logp)
+```
+
+```text
+On-policy：当前/最新策略生成新鲜数据，有限复用后重新 Rollout
+Off-policy：历史/其他策略数据可进入 Replay Buffer 反复使用
+
+部署分离不决定 On/Off-policy；
+真正关键的是 Behavior Policy 与 Current Policy 的版本和分布差距。
+
+PPO：Critic Value 作为 Advantage Baseline
+GRPO：同 Prompt 的 Group Reward 作为 Advantage Baseline
+二者通常都使用 Current/Old Ratio 与 Clip。
+```
+
+```text
+On-policy RL Step 时间：
+Rollout + Reward/Reference + Actor Train + Weight Sync - Overlap
+
+长 Response / 大 Group Size 时 Rollout 经常占大头，
+但目标不是只最大化推理 TPS，而是：
+在可接受 Policy Lag 下最大化有效新鲜样本吞吐。
+```
+
+```text
+MTP 性能直觉：
+低 Local BS Decode 常更偏 Memory-bound
+→ 成块 Verify 更容易摊薄 Target 权重访问
+
+高 Local BS 已提高权重复用/计算利用率
+→ Draft、Verify、Sampling、状态管理成本更难隐藏
+
+是否加速必须联看：
+Output TPS + TPOT + Acceptance Length
++ Draft/Verify/Sampling/State Cost
+```
+
 ## 当前必会解释
 
 - Dense、MoE 和 baseline 分别是什么；
@@ -358,18 +403,27 @@ vLLM proposer 必须与 checkpoint 同构。
 - Prepare、Pause、Transfer、Validate、Commit、Resume 的顺序为什么不能交换；
 - Fail-closed 可见性与 Tensor Rollback 有什么区别；
 - Completion Marker、Structure Hash 和 Value Checksum 分别验证什么。
+- Logit、Probability、Token Logprob 和 Sequence Logprob 怎样转换；
+- 为什么 `ratio = exp(current_logp - old_logp)`，以及两侧必须对齐同一 Token；
+- 为什么 Rollout/Trainer 分进程不等于 Off-policy；
+- PPO 为什么需要 Critic Baseline，GRPO 如何用 Group-relative Baseline 替代；
+- 为什么 LLM On-policy RL 经常受 Rollout 限制，但不能只优化推理 TPS；
+- 为什么 Local BS 很关键但不是唯一物理变量；
+- 为什么 MTP 在低 Local BS 下更容易加速，高 Local BS 下收益可能下降；
+- 为什么 Acceptance Rate 不能单独解释 Speedup；
+- 为什么正式 Benchmark 要与 Profiler 分开，并同时报告 Mean 与 Percentile。
 
 ## 明确延期但不可遗忘
 
 ### PPO / GRPO 专题
 
-当前状态：只掌握 Advantage、Policy Ratio、PPO Clip、KL 和训练健康指标的最低直觉，尚未系统
-学习公式与实现。
+当前状态：已补齐 On-policy/Off-policy、Logprob、PPO/GRPO 角色、Ratio/Clip、Critic Baseline 与
+Group-relative Baseline 的最小完整骨架。
 
-当前决策：不让完整 PPO/GRPO 学习阻塞 Baseline 与 MTP 主线；完成一个有效训练 Step、开始阅读
-相关 Loss 代码，或出现至少 45 分钟等待窗口时回补。
+仍待深入：GAE、Critic Loss、Entropy Bonus、Token-level Advantage、长度偏差和具体框架变体。
+继续保持“不阻塞 MTP 主线、遇到实际 Loss 代码时按需回补”的节奏。
 
-详细入口：[2026-07-27 PPO/GRPO 学习债务](../inbox/2026-07-27.md#1425明确延期专题ppo-与-grpo)。
+最新入口：[2026-08-06 On-policy 训推、Logprob 与 MTP 性能分析](../notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)。
 
 ## 间隔复习队列
 
@@ -386,6 +440,7 @@ vLLM proposer 必须与 checkpoint 同构。
 | [MTP Head 状态机与训练适配边界](../notes/2026/07/MTPHead状态机与训练适配边界_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 | [从 RL Trajectory 到 Megatron：Packed Sequence、MTP Mask 与 Loss 归一化](../notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 | [MTP 模型状态流与在线权重事务](../notes/2026/07/MTP模型状态流与在线权重事务_20260729.md) | 2026-07-29 | 2026-07-30 | 2026-08-01 | 2026-08-05 | 2026-08-12 | 2026-08-28 |
+| [On-policy 训推、Logprob 与 MTP 性能分析](../notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md) | 2026-08-06 | 2026-08-07 | 2026-08-09 | 2026-08-13 | 2026-08-20 | 2026-09-05 |
 
 完成复习后，可以把日期改成：
 

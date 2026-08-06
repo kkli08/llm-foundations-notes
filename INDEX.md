@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-07-31
+> 最后更新：2026-08-06
 
 ## 按日期
 
@@ -20,6 +20,10 @@
 - [2026-07-30：Qwen3-MoE 外挂 Native MTP 模块结构](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md)
 - [2026-07-31：Qwen3.5 混合架构与 Gated DeltaNet（GDN）领读](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md)
 
+### 2026 年 8 月
+
+- [2026-08-06：On-policy 训推、Logprob 与 MTP 性能分析](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)
+
 ## 按主题
 
 ### Baseline 与推理工程
@@ -31,6 +35,8 @@
 - [Baseline、Smoke、效果实验与性能实验](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#4-baselinesmoke效果实验和性能实验)
 - [Baseline 的分层成功证据](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#8-如何证明一次-baseline-真正跑通)
 - [日志、SwanLab、Grafana 与 Profiler 的分工](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#10-观测工具怎样分工)
+- [MTP Benchmark 防污染与 Fast PoC 矩阵](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#9-benchmark-防污染原则)
+- [PyTorch Profiler 与 Perfetto 的 MTP 微观归因](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#10-pytorch-profiler--perfetto-的微观分析)
 
 ### Transformer 基础
 
@@ -68,6 +74,8 @@
 - [递归式 MTP Draft 与实际成本](notes/2026/07/MTP推测解码与成块验证_20260726.md#81-一种递归式原生-mtp-draft)
 - [KV Cache、递归状态与混合 Attention](notes/2026/07/训练与RL后训练基础_20260724.md#8-从-kv-cache-扩展到通用模型状态)
 - [GDN 递归状态、Full Attention KV Cache 与混合 Cache](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#7-递归状态与-kv-cache-到底有什么不同)
+- [Roofline、Local Batch Size 与 MTP 加速边界](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#6-rooflinelocal-batch-size-与-mtp-加速)
+- [MTP 性能指标：TPS、TPOT、Acceptance Rate 与 Acceptance Length](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#8-性能指标应该怎样看)
 
 ### 训练与后训练
 
@@ -104,6 +112,10 @@
 - [动态 Token Loss 归一化与三种 Scale](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#6-loss-reduction归约是什么意思)
 - [DCP、HF Export 与 Online Weight Sync](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#3-dcphf-checkpoint-和-online-weights-的区别)
 - [Qwen3.5 GDN 的 Training、Prefill、Decode 与 MTP 状态边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#9-trainingprefilldecode-都使用这套架构)
+- [Logit、Probability、Logprob 与 Sequence Logprob](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#2-logprob-到底是什么)
+- [On-policy、Off-policy 与训推挑战](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#3-on-policy-和-off-policy)
+- [PPO 与 GRPO 的最小完整骨架](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#4-ppo-与-grpo-的最小完整骨架)
+- [为什么 On-policy 优化不能只看 Rollout TPS](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#5-on-policy-的关键是否就是-rollout-推理优化)
 
 ### 并行与状态管理
 
@@ -120,6 +132,7 @@
 - [在线权重版本事务与 Fail-closed](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#7-在线同步的版本事务)
 - [Structure Hash 与 Value Checksum](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#10-structure-hash-与-value-checksum)
 - [Qwen3.5 混合状态机与 MTP 提交边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#10-gdn-与-qwen35-mtp-的关系)
+- [Local/Global Active Batch、DP/TP 与节点边界](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#7-分布式架构与-local-batch-size)
 
 ### 快速复习
 
@@ -140,6 +153,7 @@
 - [Trajectory、MTP Mask 与 Loss 归一化一分钟复习](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#13-一分钟复习)
 - [MTP 状态流与在线权重事务一分钟复习](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#13-一分钟复习)
 - [Gated DeltaNet 与 Qwen3.5 一分钟复习](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#15-一分钟复习卡)
+- [On-policy、Logprob 与 MTP 性能一分钟复习](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#13-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
@@ -151,7 +165,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- [P1 学习债务：PPO、GRPO 的完整数学与实现](inbox/2026-07-27.md#1425明确延期专题ppo-与-grpo)（入门已覆盖；不阻塞当前 MTP 主线，按触发条件回补）；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；GAE、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
