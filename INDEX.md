@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-08-06
+> 最后更新：2026-08-12
 
 ## 按日期
 
@@ -23,6 +23,7 @@
 ### 2026 年 8 月
 
 - [2026-08-06：On-policy 训推、Logprob 与 MTP 性能分析](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)
+- [2026-08-12：推理性能测量——从请求配置到实际执行路径](notes/2026/08/推理性能的配置执行证据链_20260812.md)
 
 ## 按主题
 
@@ -38,6 +39,7 @@
 - [MTP Benchmark 防污染与 Fast PoC 矩阵](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#9-benchmark-防污染原则)
 - [PyTorch Profiler 与 Perfetto 的 MTP 微观归因](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#10-pytorch-profiler--perfetto-的微观分析)
 - [CUDA Graph、Kernel、Bucket 与 Profiler 的分工](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#103-cuda-graphkernelbucket-与-profiler-的分工)
+- [请求配置到实际执行路径的性能证据链](notes/2026/08/推理性能的配置执行证据链_20260812.md#2-四层证据链)
 
 ### Transformer 基础
 
@@ -77,6 +79,7 @@
 - [GDN 递归状态、Full Attention KV Cache 与混合 Cache](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#7-递归状态与-kv-cache-到底有什么不同)
 - [Roofline、Local Batch Size 与 MTP 加速边界](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#6-rooflinelocal-batch-size-与-mtp-加速)
 - [MTP 性能指标：TPS、TPOT、Acceptance Rate 与 Acceptance Length](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#8-性能指标应该怎样看)
+- [MTP 的配置—执行—测量契约](notes/2026/08/推理性能的配置执行证据链_20260812.md#3-与-mtp-性能的关系)
 
 ### 训练与后训练
 
@@ -155,6 +158,7 @@
 - [MTP 状态流与在线权重事务一分钟复习](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#13-一分钟复习)
 - [Gated DeltaNet 与 Qwen3.5 一分钟复习](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#15-一分钟复习卡)
 - [On-policy、Logprob 与 MTP 性能一分钟复习](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#13-一分钟复习)
+- [推理性能配置—执行证据链复习](notes/2026/08/推理性能的配置执行证据链_20260812.md#6-快速复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
