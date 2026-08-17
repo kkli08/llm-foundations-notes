@@ -12,20 +12,21 @@
 - [跨设备同步流程](SYNC_WORKFLOW.md)：在任何电脑上阅读、更新和推送前的强制同步步骤。
 - [Codex 仓库规则](AGENTS.md)：其他电脑和其他 Codex 对话自动继承的约束。
 
-## 当前核心笔记
+## 当前学习主线
 
-- [2026-07-23：LLM 普通模型 Baseline 前的基础理论](notes/2026/07/基础理论_20260723.md)
-- [2026-07-24：从预训练到 RL 后训练——MTP 与状态管理基础](notes/2026/07/训练与RL后训练基础_20260724.md)
-- [2026-07-26：RLVR 策略角色、Logprob 时序与训练诊断](notes/2026/07/RLVR策略版本与训练诊断_20260726.md)
-- [2026-07-26：MTP Label、Loss 与参数更新](notes/2026/07/MTP标签损失与参数更新_20260726.md)
-- [2026-07-26：MTP 推测解码——自回归串行、成块 Verify 与状态提交](notes/2026/07/MTP推测解码与成块验证_20260726.md)
-- [2026-07-28：从 RL Trajectory 到 Megatron——Packed Sequence、MTP Mask 与 Loss 归一化](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md)
-- [2026-07-29：MTP 模型状态流与在线权重事务](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md)
-- [2026-07-30：Qwen3-MoE 外挂 Native MTP 模块结构](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md)
-- [2026-08-06：On-policy 训推、Logprob 与 MTP 性能分析](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)
-- [2026-08-11：推理算子位置图与性能归因](notes/2026/08/推理算子位置图与性能归因_20260811.md)
-- [2026-08-17：MTP 与 Context Parallel 训练正确性](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md)
-- [2026-08-17：MoE Router Replay 与训推路由一致性](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md)
+这里只保留近期最值得反复复习的主线；完整笔记列表统一放在[总索引](INDEX.md)。
+
+- [MTP 与 Context Parallel 训练正确性](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md)
+- [MoE Router Replay 与训推路由一致性](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md)
+- [推理算子位置图与性能归因](notes/2026/08/推理算子位置图与性能归因_20260811.md)
+- [On-policy 训推、Logprob 与 MTP 性能分析](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)
+
+## 按月浏览
+
+| 月份 | 主题概览 | 月度入口 |
+|---|---|---|
+| 2026 年 8 月 | On-policy、MTP 性能归因、配置执行证据、MTP+CP、MoE Router Replay | [查看 8 月全部笔记](INDEX.md#2026-年-8-月) |
+| 2026 年 7 月 | LLM/Transformer 基础、训练与 RL、MoE/MTP、状态管理、Qwen3.5 GDN | [查看 7 月全部笔记](INDEX.md#2026-年-7-月) |
 
 ## 推荐使用方式
 
