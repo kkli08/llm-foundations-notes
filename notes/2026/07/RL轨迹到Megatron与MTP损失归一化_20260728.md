@@ -493,7 +493,9 @@ MTP Block 是 Dense 还是 MoE，能否由 vLLM 推理适配时自由选择？
 
 - 具体训练框架是在 Collate、Engine 还是模型内部生成 Future Label，需要沿目标代码路径确认。
 - Prompt Token 是否参与 MTP auxiliary loss、共享 Embedding/LM Head 的 Detach 范围，需要明确训练契约。
-- CP>1 下跨 Rank Future Label/Embedding 的通信方案仍待深入。
+- CP>1 下 Future Label/Embedding、Packed Mask、DP×CP 归一化与 Recompute
+  契约已在 [MTP 与 Context Parallel 训练正确性](../08/MTP与ContextParallel训练正确性_20260817.md)
+  中补齐；底层 Collective 与 Packed THD 布局仍待深入。
 - 不同 Megatron 版本对 MTP Label 的内部 Shift 语义可能不同，必须用小序列单测，而不是只凭概念实现。
 
 ## 16. 公开参考材料

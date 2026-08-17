@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-08-12
+> 最后更新：2026-08-17
 
 ## 开始新学习前
 
@@ -22,6 +22,45 @@
 
 请求值不等于运行事实；
 局部 profiler 指标用于解释，端到端 TPOT/TPS 用于验收。
+```
+
+```text
+QK Norm：稳定每个 Attention Head 的 Q/K 尺度
+RoPE：按 Token Position 旋转 Q/K
+Attention：当前 Q 读取历史 K/V
+LM Head：产生词表 Logits
+Local Argmax：TP 每卡先选本地最大，只聚合候选
+
+Fusion 能减少小 Kernel 和中间读写；
+不能消除 Full Attention 的历史 KV 扫描，
+也不能消除 LM Head GEMM 与自回归依赖。
+```
+
+```text
+MTP + Context Parallel：
+完整序列语义
+→ 各 Depth 的 Future Label / Embedding / Mask
+→ Packed Boundary 与 Padding
+→ CP-aware Shift / 边界通信
+→ DP×CP numerator / valid-token count
+→ Forward + Recompute + Backward + Optimizer
+
+Logical Prediction Depth K ≠ Physical MTP Layer Count；
+CP 切序列 S，不自动切词表 V。
+```
+
+```text
+MoE Online Router Replay：
+Rollout Top-K logical Expert IDs
+→ Causal Shift + Token/Layer 对齐
+→ Trajectory / Ray
+→ Actor 当前 Router Scores
+→ Gather Forced IDs
+→ 当前权重 + 固定离散路径
+→ Router Gradient
+
+只传 IDs，不传旧权重；
+同模式重复稳定是硬门，跨 Batch 自然 Route Drift 是诊断。
 ```
 
 ```text
@@ -452,6 +491,9 @@ Group-relative Baseline 的最小完整骨架。
 | [从 RL Trajectory 到 Megatron：Packed Sequence、MTP Mask 与 Loss 归一化](../notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md) | 2026-07-28 | 2026-07-29 | 2026-07-31 | 2026-08-04 | 2026-08-11 | 2026-08-27 |
 | [MTP 模型状态流与在线权重事务](../notes/2026/07/MTP模型状态流与在线权重事务_20260729.md) | 2026-07-29 | 2026-07-30 | 2026-08-01 | 2026-08-05 | 2026-08-12 | 2026-08-28 |
 | [On-policy 训推、Logprob 与 MTP 性能分析](../notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md) | 2026-08-06 | 2026-08-07 | 2026-08-09 | 2026-08-13 | 2026-08-20 | 2026-09-05 |
+| [推理算子位置图与性能归因](../notes/2026/08/推理算子位置图与性能归因_20260811.md) | 2026-08-11 | 2026-08-12 | 2026-08-14 | 2026-08-18 | 2026-08-25 | 2026-09-10 |
+| [MTP 与 Context Parallel 训练正确性](../notes/2026/08/MTP与ContextParallel训练正确性_20260817.md) | 2026-08-17 | 2026-08-18 | 2026-08-20 | 2026-08-24 | 2026-08-31 | 2026-09-16 |
+| [MoE Router Replay 与训推路由一致性](../notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md) | 2026-08-17 | 2026-08-18 | 2026-08-20 | 2026-08-24 | 2026-08-31 | 2026-09-16 |
 
 完成复习后，可以把日期改成：
 

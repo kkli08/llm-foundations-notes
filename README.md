@@ -23,6 +23,9 @@
 - [2026-07-29：MTP 模型状态流与在线权重事务](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md)
 - [2026-07-30：Qwen3-MoE 外挂 Native MTP 模块结构](notes/2026/07/Qwen3MoE外挂MTP模块结构_20260730.md)
 - [2026-08-06：On-policy 训推、Logprob 与 MTP 性能分析](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)
+- [2026-08-11：推理算子位置图与性能归因](notes/2026/08/推理算子位置图与性能归因_20260811.md)
+- [2026-08-17：MTP 与 Context Parallel 训练正确性](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md)
+- [2026-08-17：MoE Router Replay 与训推路由一致性](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md)
 
 ## 推荐使用方式
 

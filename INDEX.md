@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-08-12
+> 最后更新：2026-08-17
 
 ## 按日期
 
@@ -23,7 +23,10 @@
 ### 2026 年 8 月
 
 - [2026-08-06：On-policy 训推、Logprob 与 MTP 性能分析](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md)
+- [2026-08-11：推理算子位置图与性能归因](notes/2026/08/推理算子位置图与性能归因_20260811.md)
 - [2026-08-12：推理性能测量——从请求配置到实际执行路径](notes/2026/08/推理性能的配置执行证据链_20260812.md)
+- [2026-08-17：MTP 与 Context Parallel 训练正确性](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md)
+- [2026-08-17：MoE Router Replay 与训推路由一致性](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md)
 
 ## 按主题
 
@@ -40,6 +43,8 @@
 - [PyTorch Profiler 与 Perfetto 的 MTP 微观归因](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#10-pytorch-profiler--perfetto-的微观分析)
 - [CUDA Graph、Kernel、Bucket 与 Profiler 的分工](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#103-cuda-graphkernelbucket-与-profiler-的分工)
 - [请求配置到实际执行路径的性能证据链](notes/2026/08/推理性能的配置执行证据链_20260812.md#2-四层证据链)
+- [QK Norm、RoPE、Local Argmax 的推理位置图](notes/2026/08/推理算子位置图与性能归因_20260811.md#1-先看完整位置图)
+- [调度碎算子与硬件物理上限](notes/2026/08/推理算子位置图与性能归因_20260811.md#7-调度碎算子与硬性物理极限)
 
 ### Transformer 基础
 
@@ -63,6 +68,8 @@
 - [Model Adapter 的职责与训练边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#4-model-adapter-到底负责什么)
 - [Adapter、Converter 与 Loader 的状态流职责](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#5-adapterconverter-和-loader-的职责)
 - [Qwen3.5 的 GDN/Full Attention、MoE 与 MTP 四维架构](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#1-先看清-qwen35-35b-a3b-的四个维度)
+- [MoE Router Replay：Capture、对齐、传输与强制路由](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#3-完整数据链)
+- [自然路由 Drift 与 Replay 正确性门禁](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#9-自然路由差异不等于-capture-错误)
 
 ### 推理流程
 
@@ -80,6 +87,8 @@
 - [Roofline、Local Batch Size 与 MTP 加速边界](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#6-rooflinelocal-batch-size-与-mtp-加速)
 - [MTP 性能指标：TPS、TPOT、Acceptance Rate 与 Acceptance Length](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#8-性能指标应该怎样看)
 - [MTP 的配置—执行—测量契约](notes/2026/08/推理性能的配置执行证据链_20260812.md#3-与-mtp-性能的关系)
+- [QK Norm、RoPE 与 KV Cache 的 Decode 边界](notes/2026/08/推理算子位置图与性能归因_20260811.md#2-qk-norm先稳定查询和索引的尺度)
+- [TP Local Argmax 的收益与边界](notes/2026/08/推理算子位置图与性能归因_20260811.md#5-local-argmax减少-tp-词表聚合不减少-lm-head-计算)
 
 ### 训练与后训练
 
@@ -120,6 +129,10 @@
 - [On-policy、Off-policy 与训推挑战](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#3-on-policy-和-off-policy)
 - [PPO 与 GRPO 的最小完整骨架](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#4-ppo-与-grpo-的最小完整骨架)
 - [为什么 On-policy 优化不能只看 Rollout TPS](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#5-on-policy-的关键是否就是-rollout-推理优化)
+- [MTP+CP 的 Future Label、Mask 与 Recompute 契约](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#3-cp-为什么会破坏朴素的-mtp-shift)
+- [逻辑预测深度与物理 MTP 层数](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#2-逻辑预测深度与物理-mtp-层数)
+- [线性 MTP 与 Tree Training 的能力边界](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#10-线性-mtp-与树状能力)
+- [MoE Replay 为什么只传 Expert IDs 并保留 Router 梯度](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#4-为什么只传-top-k-ids不传-top-k-weights)
 
 ### 并行与状态管理
 
@@ -137,6 +150,9 @@
 - [Structure Hash 与 Value Checksum](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#10-structure-hash-与-value-checksum)
 - [Qwen3.5 混合状态机与 MTP 提交边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#10-gdn-与-qwen35-mtp-的关系)
 - [Local/Global Active Batch、DP/TP 与节点边界](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#7-分布式架构与-local-batch-size)
+- [MTP+CP 的 DP×CP Token 归一化与零有效 Rank](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#6-dpcp-的全局-token-归一化)
+- [为什么 CP 切序列仍可能在词表轴 OOM](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#9-为什么-cp8-仍可能在词表输出处-oom)
+- [Logical Expert ID、EP 映射与 Router Replay](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#5-为什么必须捕获-logical-expert-ids)
 
 ### 快速复习
 
@@ -159,13 +175,16 @@
 - [Gated DeltaNet 与 Qwen3.5 一分钟复习](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#15-一分钟复习卡)
 - [On-policy、Logprob 与 MTP 性能一分钟复习](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#13-一分钟复习)
 - [推理性能配置—执行证据链复习](notes/2026/08/推理性能的配置执行证据链_20260812.md#6-快速复习)
+- [推理算子位置与性能归因复习](notes/2026/08/推理算子位置图与性能归因_20260811.md#11-一分钟复习)
+- [MTP 与 Context Parallel 训练正确性复习](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#13-一分钟复习)
+- [MoE Router Replay 复习](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#14-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
 
-- MoE、Router Scores/Top-K/加权聚合、TP/EP/PP 与 Local/Global 编号已有任务所需入门；Router 梯度、Load Balance Loss、All-to-All Kernel 和 EP 性能优化仍待深入；
+- MoE、Router Scores/Top-K/加权聚合、TP/EP/PP、Local/Global 编号与 Online Router Replay 已有任务所需完整认知；Load Balance Loss、All-to-All Kernel、EPLB 和 EP 性能优化仍待深入；
 - Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；推理并发与 Continuous Batching 仍待深入；
-- Tensor Parallel、Pipeline Parallel、Context Parallel 的通信与张量变化（入门分类已覆盖；MTP+CP 的跨 Rank Future 依赖已有最小认知）；
+- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP 正确性契约已覆盖；CP Collective、Packed THD 与 GDN State 的底层布局仍待深入；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
