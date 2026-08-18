@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-08-17
+> 最后更新：2026-08-18
 
 ## 按日期
 
@@ -27,6 +27,8 @@
 - [2026-08-12：推理性能测量——从请求配置到实际执行路径](notes/2026/08/推理性能的配置执行证据链_20260812.md)
 - [2026-08-17：MTP 与 Context Parallel 训练正确性](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md)
 - [2026-08-17：MoE Router Replay 与训推路由一致性](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md)
+- [2026-08-18：MTP 与 Pipeline Parallel 阶段所有权](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md)
+- [2026-08-18：Online RL 的 Cohort 并发与会话容量](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md)
 
 ## 按主题
 
@@ -45,6 +47,7 @@
 - [请求配置到实际执行路径的性能证据链](notes/2026/08/推理性能的配置执行证据链_20260812.md#2-四层证据链)
 - [QK Norm、RoPE、Local Argmax 的推理位置图](notes/2026/08/推理算子位置图与性能归因_20260811.md#1-先看完整位置图)
 - [调度碎算子与硬件物理上限](notes/2026/08/推理算子位置图与性能归因_20260811.md#7-调度碎算子与硬性物理极限)
+- [Online RL Cohort 并发、每后端容量与长尾](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md#3-global-concurrency-与-physical-session-capacity)
 
 ### Transformer 基础
 
@@ -70,6 +73,7 @@
 - [Qwen3.5 的 GDN/Full Attention、MoE 与 MTP 四维架构](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#1-先看清-qwen35-35b-a3b-的四个维度)
 - [MoE Router Replay：Capture、对齐、传输与强制路由](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#3-完整数据链)
 - [自然路由 Drift 与 Replay 正确性门禁](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#9-自然路由差异不等于-capture-错误)
+- [Ray Object Store、Spill 与 DP Group 内 NCCL 分发](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#81-ray-objectref-到消费端的数据流)
 
 ### 推理流程
 
@@ -133,6 +137,8 @@
 - [逻辑预测深度与物理 MTP 层数](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#2-逻辑预测深度与物理-mtp-层数)
 - [线性 MTP 与 Tree Training 的能力边界](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#10-线性-mtp-与树状能力)
 - [MoE Replay 为什么只传 Expert IDs 并保留 Router 梯度](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#4-为什么只传-top-k-ids不传-top-k-weights)
+- [MTP 多深度 Loss、共享物理层与 Teacher Forcing](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#22-多深度-loss共享物理层与-teacher-forcing)
+- [Online RL 的 Cohort 容量、Judge 与严格 MTP AB](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md#10-mtp-offon-严格-ab-如何固定变量)
 
 ### 并行与状态管理
 
@@ -153,6 +159,8 @@
 - [MTP+CP 的 DP×CP Token 归一化与零有效 Rank](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#6-dpcp-的全局-token-归一化)
 - [为什么 CP 切序列仍可能在词表轴 OOM](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#9-为什么-cp8-仍可能在词表输出处-oom)
 - [Logical Expert ID、EP 映射与 Router Replay](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#5-为什么必须捕获-logical-expert-ids)
+- [MTP 在 PP 中的 Owner、Metrics、Checkpoint 与 Weight Sync](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md#3-为什么-mtp-通常属于最后一个-pp-stage)
+- [PP/VPP 的区别与 MTP 验证阶梯](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md#2-pp-和-vpp-分别是什么)
 
 ### 快速复习
 
@@ -178,13 +186,15 @@
 - [推理算子位置与性能归因复习](notes/2026/08/推理算子位置图与性能归因_20260811.md#11-一分钟复习)
 - [MTP 与 Context Parallel 训练正确性复习](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#13-一分钟复习)
 - [MoE Router Replay 复习](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#14-一分钟复习)
+- [MTP 与 Pipeline Parallel 阶段所有权复习](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md#15-一分钟复习)
+- [Online RL Cohort 并发与会话容量复习](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md#14-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
 
 - MoE、Router Scores/Top-K/加权聚合、TP/EP/PP、Local/Global 编号与 Online Router Replay 已有任务所需完整认知；Load Balance Loss、All-to-All Kernel、EPLB 和 EP 性能优化仍待深入；
 - Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；推理并发与 Continuous Batching 仍待深入；
-- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP 正确性契约已覆盖；CP Collective、Packed THD 与 GDN State 的底层布局仍待深入；
+- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP/PP 正确性契约已覆盖；VPP>1 Ownership、CP Collective、Packed THD 与 GDN State 的底层布局仍待深入；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；

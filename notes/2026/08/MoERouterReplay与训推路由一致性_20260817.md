@@ -183,6 +183,67 @@ $$
 
 必须用 Route Off/On 的严格 A/B 解释增量。某个 `ray_get_batch_ms` 若同时包含其他 Trajectory 字段，不能直接称为“纯路由 Get 时间”。
 
+### 8.1 Ray ObjectRef 到消费端的数据流
+
+Ray Object Store 不是一个集中式内存池，而是每个节点都有自己的对象存储。
+
+```text
+Producer ray.put(route)
+→ 序列化并写入 Producer 节点 Object Store
+→ 返回一个很小的 ObjectRef
+
+Consumer ray.get(ref)
+→ 对象已在本地：直接读取
+→ 对象在远端：跨网络拉到 Consumer Object Store
+→ 对象已 Spill：先从磁盘/外部存储恢复
+→ 反序列化或映射给消费者
+```
+
+因此 `ray.get` 耗时可能同时包含：等 Producer、网络传输、Object Store 写入、Spill Restore 和反序列化/拷贝。`ray.put` 也不是免费广播，它只是先写生产者所在节点。
+
+### 8.2 为什么每个 Actor DP Group 只 Get 一次
+
+理想数据面是：
+
+```text
+Rollout Capture
+→ ray.put
+→ Actor DP Group Head ray.get 一次
+→ H2D 一次
+→ NCCL Broadcast 给该 DP Group 的 TP/EP Ranks
+→ 各 Microbatch 只做 Local Slice
+```
+
+要避免：
+
+- 每个 Rank 都独立 `ray.get`；
+- 每个 Microbatch 重复 `ray.get`/H2D；
+- 拆成大量小 ObjectRef，让调度和序列化开销主导；
+- 对象被驱逐后又在同一轮重复跨节点拉取。
+
+性能目标可以记成：每个 Actor DP Group 只做一次物理本地化、一次 H2D，之后利用训练拓扑内部 Collective 分发。
+
+### 8.3 Spill 与 NCCL 不是一回事
+
+Object Store 共享内存压力过大时，Ray 会把对象 Spill 到磁盘或外部存储；之后的 `get` 必须 Restore。这会增加磁盘 I/O、额外拷贝和尾延迟波动，所以要观测 Object Location 以及 Spilled/Restored Bytes。
+
+NCCL 则负责 GPU Rank 之间的 Collective，并不要求一定有 NVLink：
+
+- 节点内优先 NVLink/NVSwitch，其次 PCIe P2P，必要时可经 Host Staging；
+- 跨节点通常使用 IB/RoCE，也可能退化到 TCP。
+
+所以“Ray 对象 Spill”、“Ray 跨节点 Get”和“NCCL Broadcast 走什么链路”必须分开定位，不能一律归因为 NVLink 或网络问题。
+
+### 8.4 Route Replay 的性能优化顺序
+
+1. 只传有效 Token 和实际 MoE Layer，先从语义上消除 Padding/无用行；
+2. 使用紧凑的整数 Expert IDs，不传旧 Router Weights；
+3. 每个 DP Group 一次 Get + H2D，再用 NCCL 向 TP/EP Rank 扩散；
+4. 控制 In-flight Trace 数量，避免 Object Store Spill；
+5. 再优化 Pinned H2D、Validation、逐层 Cast/Padding 和小粒度 Kernel。
+
+大 Payload 下 `ray.put/get` 可能比 H2D 更显著，小 Payload 下又可能几乎不可见。这是需要 Route Off/On 严格 A/B 证明的实验结论，不是只靠公式就能确定的固定瓶颈。
+
 ## 9. 自然路由差异不等于 Capture 错误
 
 需要区分三种比较：

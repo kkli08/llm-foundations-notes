@@ -70,6 +70,36 @@ physical MTP layers = 1
 
 CP>1 是 Actor 训练拓扑能力，不应再发明一组 CP 专属 MTP 参数。它应让原有 MTP 语义在序列分片后保持正确，并在底层能力缺失时 Fail Fast。
 
+### 2.2 多深度 Loss、共享物理层与 Teacher Forcing
+
+K2 训练会产生两个逻辑 Loss：
+
+```text
+Depth 1 → mtp_1_loss
+Depth 2 → mtp_2_loss
+```
+
+它们与 CP Size 无关。对 repeated-layer 实现，同一份物理参数 $W$ 被调用两次，两条计算路径的梯度在 Backward 时累加到同一个 $W$ 上，Optimizer 仍只更新一份物理层。
+
+一种常见加权方式是：
+
+$$
+L_{\text{MTP}}
+=
+\frac{\alpha}{K}
+\sum_{k=1}^{K}L_k
+$$
+
+例如 $\alpha=0.1,K=2$，则进入 Total Loss 的是 `0.05 * L1 + 0.05 * L2`。日志里单独展示的 `mtp_1_loss` 和 `mtp_2_loss` 通常是加权前的 Raw Loss，不应直接把它们当成对 Total Loss 的实际贡献。
+
+训练时通常使用 Teacher Forcing：Depth 2 的 Future Token Embedding 来自 Ground Truth，而不是 Depth 1 刚采样出的 Draft Token。所以：
+
+- Depth 1 预测错不会把一个错 Token 直接喂给 Depth 2；
+- Depth 2 仍可以使用 Depth 1 的 Hidden State，梯度也可以穿过重复调用；
+- 推理侧却是线性 Draft Chain，第一个 Draft 错误往往会让后续候选无法被 Target 接受。
+
+`detach_encoder=true` 另外决定 MTP Loss 是否回传到 Backbone：它不改变 Teacher Forcing，也不改变同一 MTP 物理层被多次调用的事实。
+
 ## 3. CP 为什么会破坏朴素的 MTP Shift
 
 假设完整序列被两个 CP Rank 切分：
@@ -283,6 +313,8 @@ Draft 1 → Draft 2 → Draft 3
 ### 11.4 完整模型 Smoke
 
 再验证真实模型构建、Checkpoint 加载、两步训练、有限 Loss/Grad Norm 和参数更新。这里应把“功能正确性”和“目标长度容量”分成两个验收门。
+
+当前证据边界：完整模型的 Packed CP8/K2、32K 两步训练已能观察到有限 Loss/Gradient 和参数变化，这支持“训练正确性闭环已跑通”。它不证明 128K 容量或性能已通过；更长序列仍可能在未分片的词表 Logits/Gradient 轴 OOM。
 
 ## 12. 常见误解
 

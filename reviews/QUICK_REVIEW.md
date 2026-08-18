@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-08-17
+> 最后更新：2026-08-18
 
 ## 开始新学习前
 
@@ -12,6 +12,30 @@
 4. 答错的内容加入当天 Inbox。
 
 ## 当前核心心智模型
+
+```text
+MTP + Pipeline Parallel：
+PP 切 Layer，MTP 通常属于最后 Stage
+→ Layout 物化 MTP
+→ Owner 构造 Supervision/Loss
+→ Loss 只按 DP×CP Token 归一化
+→ Metrics 从最后 Stage 回传 PP0
+→ Checkpoint/Weight Sync 合并 Exact Set
+
+Logical MTP Depth 决定计算次数；
+Physical MTP Layers 决定参数、显存和 Checkpoint。
+```
+
+```text
+Online RL Cohort：
+同一 Prompt 的 G 条 Session 往往要整组就绪
+→ Global Concurrency 分到 R 个 Backend
+→ 若 Cohort 绑定单 Backend，要求 C_backend >= G
+→ Cohort Ready 时间近似由最慢 Session 决定
+
+Reservation Timeout 只能容忍正常排队；
+不能修复物理容量不足、Session 泄漏或吞吐过低。
+```
 
 ```text
 推理优化的证据链：
@@ -494,6 +518,8 @@ Group-relative Baseline 的最小完整骨架。
 | [推理算子位置图与性能归因](../notes/2026/08/推理算子位置图与性能归因_20260811.md) | 2026-08-11 | 2026-08-12 | 2026-08-14 | 2026-08-18 | 2026-08-25 | 2026-09-10 |
 | [MTP 与 Context Parallel 训练正确性](../notes/2026/08/MTP与ContextParallel训练正确性_20260817.md) | 2026-08-17 | 2026-08-18 | 2026-08-20 | 2026-08-24 | 2026-08-31 | 2026-09-16 |
 | [MoE Router Replay 与训推路由一致性](../notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md) | 2026-08-17 | 2026-08-18 | 2026-08-20 | 2026-08-24 | 2026-08-31 | 2026-09-16 |
+| [MTP 与 Pipeline Parallel 阶段所有权](../notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md) | 2026-08-18 | 2026-08-19 | 2026-08-21 | 2026-08-25 | 2026-09-01 | 2026-09-17 |
+| [Online RL 的 Cohort 并发与会话容量](../notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md) | 2026-08-18 | 2026-08-19 | 2026-08-21 | 2026-08-25 | 2026-09-01 | 2026-09-17 |
 
 完成复习后，可以把日期改成：
 
