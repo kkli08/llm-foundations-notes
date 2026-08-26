@@ -150,10 +150,38 @@ Debug 落盘是旁路：
 - 保存推理侧捕获并已对齐的 `topk_ids`；
 - 附带 Step、Rank、Shape、DType、有效 Token/Layer 信息；
 - 默认关闭，不参与正常训练；
-- 由 Workflow/Controller 异步写，避免 Router Hook 热路径同步 I/O；
+- 可把阻塞式文件 I/O 放入线程，避免直接阻塞事件循环；
 - 不等于从历史文件加载并跨运行 Replay，后者是另一项 Offline 功能。
 
-因此配置名用 `online` 比 `rollout` 更准确：它强调同一训练轮次的内存传输与使用，而不是一个模糊的执行阶段名称。
+因此 `R3` 表示同一训练轮次内的 Replay 语义：路由随 Trajectory 走内存/Ray 主链路，Debug 文件不是训练输入。
+
+### 7.1 2026-08-26 实现边界补充
+
+当前实现语义需要更精确地区分“异步 API”和“真正后台写入”：
+
+```text
+await asyncio.to_thread(torch.save, ...)
+```
+
+表示 `torch.save` 在工作线程执行，所以不会直接卡住 asyncio Event Loop；但调用方仍然 `await` 文件写完后才继续完成 Trajectory。因此它：
+
+- 不是 Fire-and-forget；
+- 不是有界后台队列；
+- NAS 较慢时仍可能增加 Rollout 尾延迟；
+- 写盘失败不会让 R3 改成从磁盘读取；
+- 只要 Debug 路径非空，当前实现可能对每条带路由的完成 Trajectory 落盘，而不是自动抽样。
+
+推荐边界：
+
+```text
+正确性 Smoke：
+R3 主链路 + 少量 Debug Dump，方便检查 Shape/对齐
+
+正式性能测试或长训练：
+R3 主链路保留，Debug Dump 关闭
+```
+
+若以后要长期开启，应增加“有界后台队列 + 抽样率 + 退出时 Flush + 丢弃/失败指标”，才能更接近真正不阻塞的诊断旁路。
 
 ## 8. Route Tensor 的数据量与 Ray 成本
 
@@ -345,6 +373,7 @@ Route Off/On 两组必须固定：
 | Serial/Concurrent Route 不同就证明 Capturer 串请求 | 还需分别验证每份 Capture、同模式重复和 Token/层对齐 |
 | Physical Expert ID 可以跨系统直接传 | 应传稳定的 Logical ID，再按训练拓扑映射 |
 | Debug 文件是 Online Replay 的主数据面 | 正常路径走内存/Ray，落盘只是可选诊断 |
+| `asyncio.to_thread` 就是完全异步后台落盘 | 若调用方仍 `await`，事件循环不被阻塞，但 Trajectory 完成仍会等待 I/O |
 | Forward 使用 Forced IDs 就够了 | Recompute 也必须复用同一 IDs |
 
 ## 14. 一分钟复习
@@ -353,7 +382,7 @@ Route Off/On 两组必须固定：
 2. Actor 用当前 Scores Gather Forced IDs，再按原生规则重算权重，因此保留 Router Gradient。
 3. 路由 Tensor 必须经过 Causal Shift、Token/Layer、Packing 和 PP/VPP/CP 对齐。
 4. 同模式重复稳定是硬门；跨 Batch 的自然 Route Drift 是诊断，不自动等于 Capture Bug。
-5. Online Replay 走 Trajectory/Ray；Debug 落盘默认关闭；Recompute 必须复用同一路由。
+5. R3 Replay 走 Trajectory/Ray；Debug 落盘默认关闭，`to_thread + await` 仍可能增加尾延迟；Recompute 必须复用同一路由。
 
 ## 15. 自测问题
 

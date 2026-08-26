@@ -16,6 +16,7 @@
 
 这里只保留近期最值得反复复习的主线；完整笔记列表统一放在[总索引](INDEX.md)。
 
+- [Online MTP 训练成本、K/D 解耦与性能归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md)
 - [MTP 与 Pipeline Parallel 阶段所有权](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md)
 - [Online RL 的 Cohort 并发与会话容量](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md)
 - [MTP 与 Context Parallel 训练正确性](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md)
@@ -25,7 +26,7 @@
 
 | 月份 | 主题概览 | 月度入口 |
 |---|---|---|
-| 2026 年 8 月 | On-policy、MTP 性能归因、MTP+CP/PP、Cohort 并发、MoE Router Replay | [查看 8 月全部笔记](INDEX.md#2026-年-8-月) |
+| 2026 年 8 月 | On-policy、Online MTP K/D 解耦、训练性能归因、MTP+CP/PP、Cohort、MoE Router Replay | [查看 8 月全部笔记](INDEX.md#2026-年-8-月) |
 | 2026 年 7 月 | LLM/Transformer 基础、训练与 RL、MoE/MTP、状态管理、Qwen3.5 GDN | [查看 7 月全部笔记](INDEX.md#2026-年-7-月) |
 
 ## 推荐使用方式

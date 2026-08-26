@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-08-18
+> 最后更新：2026-08-26
 
 ## 开始新学习前
 
@@ -12,6 +12,36 @@
 4. 答错的内容加入当天 Inbox。
 
 ## 当前核心心智模型
+
+```text
+Online MTP：
+当前 Policy Rollout Token
+→ Future-token CE/SFT
+→ 通常只更新 MTP Drafter
+
+Rollout K：推理提出几个候选
+Train D：训练几个未来深度
+K 与 D 可以解耦。
+```
+
+```text
+三臂对照：
+Off → Frozen：纯投机推理收益
+Frozen → Online：在线适配收益与 Actor 成本
+Off → Online：端到端总价值
+
+Actor recompute_logprob ≠ Activation Recompute；
+CE Fusion ≠ LM Head Projection Fusion。
+```
+
+```text
+性能归因：
+CPU Envelope ≠ 纯 CPU 计算
+长 NCCL Range ≠ 全是网络传输
+Torch-Compiled Region ≠ 正在编译
+Profiler Trace ≠ 生产吞吐
+HF 权重恢复 ≠ 完整断点续训
+```
 
 ```text
 MTP + Pipeline Parallel：
@@ -387,6 +417,17 @@ Output TPS + TPOT + Acceptance Length
 
 ## 当前必会解释
 
+- Rollout K 与 Train Depth D 为什么可以不同；
+- Off、Frozen、Online 三臂分别隔离什么变量；
+- Online MTP 为什么是 RL 旁边的辅助 Token CE/SFT，而不是另一种 RL；
+- `detach_encoder` 为什么不消除 MTP Forward、DGRAD 和 Recompute；
+- Actor Logprob Recompute 与 Activation Recompute 的区别；
+- CE Fusion 为什么不自动消除全词表 Projection；
+- 为什么冻结 LM Head 后仍可能存在 Projection DGRAD；
+- 怎样区分 MoE Payload、Expert Imbalance 与 Rank Arrival Skew；
+- CUDA Memory Snapshot 没有产出时，为什么不能直接断言 OOM 或 Dump API 失败；
+- Acceptance Length 与 Acceptance Rate 的口径差异；
+- HF Weight Warm Start 与完整断点续训的区别；
 - Dense、MoE 和 baseline 分别是什么；
 - Transformer 是模型架构，训练和推理都会使用；
 - Hidden State、Q/K/V、FFN 分别是什么；
@@ -520,6 +561,7 @@ Group-relative Baseline 的最小完整骨架。
 | [MoE Router Replay 与训推路由一致性](../notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md) | 2026-08-17 | 2026-08-18 | 2026-08-20 | 2026-08-24 | 2026-08-31 | 2026-09-16 |
 | [MTP 与 Pipeline Parallel 阶段所有权](../notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md) | 2026-08-18 | 2026-08-19 | 2026-08-21 | 2026-08-25 | 2026-09-01 | 2026-09-17 |
 | [Online RL 的 Cohort 并发与会话容量](../notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md) | 2026-08-18 | 2026-08-19 | 2026-08-21 | 2026-08-25 | 2026-09-01 | 2026-09-17 |
+| [Online MTP 训练成本、K/D 解耦与性能归因](../notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md) | 2026-08-26 | 2026-08-27 | 2026-08-29 | 2026-09-02 | 2026-09-09 | 2026-09-25 |
 
 完成复习后，可以把日期改成：
 
