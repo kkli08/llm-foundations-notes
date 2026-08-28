@@ -316,6 +316,35 @@ Draft 1 → Draft 2 → Draft 3
 
 当前证据边界：完整模型的 Packed CP8/K2、32K 两步训练已能观察到有限 Loss/Gradient 和参数变化，这支持“训练正确性闭环已跑通”。它不证明 128K 容量或性能已通过；更长序列仍可能在未分片的词表 Logits/Gradient 轴 OOM。
 
+### 11.5 2026-08-28 补充：普通 CP 能力不等于 MTP+CP 集成能力
+
+一个运行镜像或 Megatron-Core 版本“支持 CP”，只证明普通主干模型可能具备序列分片能力。MTP+CP 还依赖一组组合能力，例如：
+
+- CP-aware Future Token/Embedding Shift；
+- 将 Tensor 按 CP 布局移动或滚动的底层 API；
+- MTP Loss 的 CP Group 与全局 Token 归一化；
+- Packed Sequence Metadata 在 MTP/Recompute 中透传；
+- 当前 MTP 模块所期望的返回值和 Loss 处理接口。
+
+因此运行前应做 Capability Probe，而不是只比较版本字符串：
+
+```text
+普通 CP 可用？
+→ MTP+CP 需要的函数、参数和 Process Group 是否都存在？
+→ 调用签名与当前 Adapter 是否匹配？
+├── 是：允许 CP>1 MTP Preflight
+└── 否：Fail Fast，并要求使用已适配的运行镜像/底层实现
+```
+
+`CP=1` 不触发跨 Rank Future 依赖，所以它可以在缺少上述组合 API 时仍然工作。但：
+
+```text
+CP=1 MTP PASS
+≠ 当前运行环境支持 CP>1 MTP
+```
+
+这类失败是 Runtime Capability/Integration 问题，不应误写成“算法上 MTP 不支持 CP”。
+
 ## 12. 常见误解
 
 | 容易误解为 | 更准确的理解 |
@@ -327,6 +356,7 @@ Draft 1 → Draft 2 → Draft 3
 | 某 Rank 零有效 Token 一定异常 | 可能是合法边界；关键是 Collective 一致和全局 Count |
 | CP8 后长序列一定不会 OOM | CP 只切序列；词表/参数轴可能仍未分片 |
 | 线性 K2 与两分支 Tree Draft 等价 | 一个是串行单链，一个是多分支候选结构 |
+| 普通 CP 能跑就代表 MTP+CP 能跑 | 组合路径还需要 CP-aware Shift、Loss、Group 与 Packed/Recompute API |
 
 ## 13. 一分钟复习
 
@@ -335,6 +365,7 @@ Draft 1 → Draft 2 → Draft 3
 3. Logical K 与 Physical MTP Layer Count 分离；一个物理层可重复形成多个逻辑 Depth。
 4. Recompute 必须重放同一 Mask/Shift/分片语义，正确性要验证到 Backward 和 Optimizer。
 5. CP 切 $S$，不切 $V$；正确性通过与目标长度容量通过是两个门。
+6. 运行环境要按实际 API 做 Capability Probe；`CP=1` PASS 不证明 `CP>1` MTP 集成可用。
 
 ## 14. 自测问题
 

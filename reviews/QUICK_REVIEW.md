@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-08-26
+> 最后更新：2026-08-28
 
 ## 开始新学习前
 
@@ -12,6 +12,31 @@
 4. 答错的内容加入当天 Inbox。
 
 ## 当前核心心智模型
+
+```text
+Online EVO Rollout：
+当前 Agent/Skill/Prompt
+→ Task→Trajectory 并发执行
+→ 区分行为失败与基础设施失败
+→ Failure Attribution
+→ 候选演化
+→ Held-out Replay Validation
+→ 提交新版本
+
+EVO 业务层、Rollout 执行层、Environment 层必须解耦；
+Online 不自动等于 On-policy RL。
+```
+
+```text
+MTP 多 Depth 显存：
+D1 CE 为 Backward 保存 FP32 状态
+→ D2 创建 BF16 Logits 与新的 FP32 CE 状态
+→ 生命周期重叠可能触发 allocator Segment 扩展/映射
+→ Host 等待表现为 GPU Bubble
+
+Activation Recompute 只覆盖 checkpoint 区域；
+Memory Snapshot 能看到 allocator 事件，但不能单独解释全部驱动/VMM 机制。
+```
 
 ```text
 Online MTP：
@@ -416,6 +441,18 @@ Output TPS + TPOT + Acceptance Length
 ```
 
 ## 当前必会解释
+
+- Online EVO Rollout 为什么不等于 RL Rollout，也不自动等于 On-policy；
+- EVO 业务层、Rollout 执行层与 Environment/Sandbox 层分别负责什么；
+- DatasetRouter 为什么依赖权威 Metadata、未知类型要 Fail Closed；
+- 为什么基础设施失败不能伪装成低 Reward；
+- 为什么 Trajectory 必须记录实际 Agent/Skill/Model 版本；
+- Activation Recompute 为什么不自动消除 checkpoint 区域外的全词表 Logits/CE；
+- 为什么 D1 的 FP32 CE 状态可能跨到 D2，而 D1 BF16 Logits 不一定同时存活；
+- `empty_strided`、`segment_map` 与 GPU Bubble 相邻时能证明什么、不能证明什么；
+- 为什么 Segment 扩展不等于已经证明严重显存碎片；
+- Memory Snapshot Ring Buffer 被覆盖后为什么只能解释保留下来的尾部窗口；
+- 为什么普通 CP 可用、甚至 `CP=1` MTP 通过，仍不能证明当前 Runtime 具备 `CP>1` MTP 组合能力；
 
 - Rollout K 与 Train Depth D 为什么可以不同；
 - Off、Frozen、Online 三臂分别隔离什么变量；

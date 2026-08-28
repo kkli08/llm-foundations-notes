@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-08-26
+> 最后更新：2026-08-28
 
 ## 按日期
 
@@ -30,6 +30,8 @@
 - [2026-08-18：MTP 与 Pipeline Parallel 阶段所有权](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md)
 - [2026-08-18：Online RL 的 Cohort 并发与会话容量](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md)
 - [2026-08-26：Online MTP 训练成本、K/D 解耦与性能归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md)
+- [2026-08-28：MTP 显存生命周期与 Allocator 性能归因](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md)
+- [2026-08-28：Online EVO Rollout 架构与任务边界](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md)
 
 ## 按主题
 
@@ -52,6 +54,8 @@
 - [Online MTP 的 K/D 解耦与三臂性能对照](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#3-rollout-k-与-train-depth-d-为什么必须分开)
 - [Actor Logprob 重算、Activation Recompute 与 CE Fusion 边界](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#5-两种-recompute-必须严格区分)
 - [Profiler、MoE All-to-All 与 CUDA Memory Snapshot 归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#8-profiler-应怎样做因果归因)
+- [MTP Logits/CE 生命周期、Allocator Segment 与 GPU Bubble](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#4-用-d1d2-时序理解-tensor-生命周期)
+- [Online EVO 的 Task→Trajectory、DatasetRouter 与执行分层](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#4-最小核心契约task--trajectory)
 
 ### Transformer 基础
 
@@ -139,6 +143,7 @@
 - [PPO 与 GRPO 的最小完整骨架](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#4-ppo-与-grpo-的最小完整骨架)
 - [为什么 On-policy 优化不能只看 Rollout TPS](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#5-on-policy-的关键是否就是-rollout-推理优化)
 - [MTP+CP 的 Future Label、Mask 与 Recompute 契约](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#3-cp-为什么会破坏朴素的-mtp-shift)
+- [普通 CP 能力与 MTP+CP Runtime Capability 的区别](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#115-2026-08-28-补充普通-cp-能力不等于-mtpcp-集成能力)
 - [逻辑预测深度与物理 MTP 层数](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#2-逻辑预测深度与物理-mtp-层数)
 - [线性 MTP 与 Tree Training 的能力边界](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#10-线性-mtp-与树状能力)
 - [MoE Replay 为什么只传 Expert IDs 并保留 Router 梯度](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#4-为什么只传-top-k-ids不传-top-k-weights)
@@ -146,6 +151,8 @@
 - [Online RL 的 Cohort 容量、Judge 与严格 MTP AB](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md#10-mtp-offon-严格-ab-如何固定变量)
 - [Online MTP 辅助 CE、Off/Frozen/Online 三臂与 K/D 消融](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#2-online-mtp-到底在训练什么)
 - [Agentic-safe MTP Mask 与 Acceptance 指标口径](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#11-acceptance-length-与-acceptance-rate)
+- [Online EVO 为什么不等于 On-policy RL](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#3-online-在这里是什么意思)
+- [EVO 轨迹失败分类、版本提交与回放验证](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#7-并发执行时最容易出错的地方)
 
 ### 并行与状态管理
 
@@ -169,6 +176,8 @@
 - [MTP 在 PP 中的 Owner、Metrics、Checkpoint 与 Weight Sync](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md#3-为什么-mtp-通常属于最后一个-pp-stage)
 - [PP/VPP 的区别与 MTP 验证阶梯](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md#2-pp-和-vpp-分别是什么)
 - [HF Weight Warm Start 与完整断点续训](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#13-checkpoint精确续训与-weight-warm-start)
+- [Activation Recompute、全词表张量与 Allocator Snapshot 边界](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#3-activation-recompute-到底保存了什么)
+- [Online EVO Rollout 的版本化 Task/Trajectory 状态](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#8-版本与正确性)
 
 ### 快速复习
 
@@ -197,6 +206,8 @@
 - [MTP 与 Pipeline Parallel 阶段所有权复习](notes/2026/08/MTP与PipelineParallel阶段所有权_20260818.md#15-一分钟复习)
 - [Online RL Cohort 并发与会话容量复习](notes/2026/08/OnlineRL的Cohort并发与会话容量_20260818.md#14-一分钟复习)
 - [Online MTP 训练成本与性能归因复习](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#16-一分钟复习)
+- [MTP 显存生命周期与 Allocator 归因复习](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#11-一分钟复习)
+- [Online EVO Rollout 架构复习](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#13-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
