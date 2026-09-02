@@ -1,6 +1,6 @@
 # 快速复习
 
-> 最后更新：2026-08-28
+> 最后更新：2026-09-02
 
 ## 开始新学习前
 
@@ -12,6 +12,35 @@
 4. 答错的内容加入当天 Inbox。
 
 ## 当前核心心智模型
+
+```text
+MTP Auxiliary Training：
+保留主 Logits 契约
+→ Label/Mask 只按约定 Shift
+→ λ_mtp × Token Weight × DP/CP Compensation × Optimizer Scale
+→ 首 Depth 隔离 Backbone，保留 MTP Depth 间梯度链
+→ Packed/CP/Recompute 验证到 Backward + Optimizer
+```
+
+```text
+Evaluation Core：
+Candidate + Task + EvalSpec
+→ EVAL_ROLLOUT → EpisodeResult
+→ Score → Reduce → Metric → EvalResult
+
+训练主链是 TRAIN_ROLLOUT → Reward/Advantage → Update；
+Online/Offline 主要改变 Trigger，TRAIN/EVAL 必须隔离数据用途。
+```
+
+```text
+MTP 质量 Parity：
+同一 Checkpoint，只改变 off / K
+→ 固定 Dataset、Sampling、Judge 与并发
+→ 逐题配对 + 多 Seed / 置信区间
+→ 预先定义等价边界 ε
+
+质量表 ≠ 性能表 ≠ Acceptance 表。
+```
 
 ```text
 Online EVO Rollout：
@@ -441,6 +470,21 @@ Output TPS + TPOT + Acceptance Length
 ```
 
 ## 当前必会解释
+
+- MTP 辅助训练为什么不能简化成“在总 Loss 上加一个 CE”；
+- Actor Loss Mask 的基础语义与 MTP Helper 内部 Shift 为什么容易造成 Double-shift；
+- `λ_mtp`、Token/Microbatch Weight、DP/CP Compensation 和 Optimizer Loss Scale 的区别；
+- 为什么只在第一个 MTP Depth 隔离 Backbone Hidden，同时保留 Depth 间梯度链；
+- Packed THD CP 可用为什么不自动证明某个 GDN Backbone 支持 CP；
+- 非 Tensor Packed Metadata 为什么可能只在 Backward Recompute 失败；
+- TRAIN_ROLLOUT 与 EVAL_ROLLOUT 为什么不是串行必经的两个阶段；
+- Online/Offline Eval 为什么应复用同一 Evaluation Core；
+- CandidateRef、TaskSpec、AttemptRequest、EpisodeResult 与 EvalResult 分别描述什么；
+- 训练与评测共用 Executor 时，为什么必须隔离 Purpose、Storage 和 Sink；
+- 为什么同 Checkpoint、只改变 Speculative K 才是更干净的质量 A/B；
+- 为什么“差异不显著”不等于“统计等价”；
+- Temperature Sampling 与小数据集如何放大质量分数波动；
+- 为什么 MTP 质量、性能和 Acceptance 必须分成三张表；
 
 - Online EVO Rollout 为什么不等于 RL Rollout，也不自动等于 On-policy；
 - EVO 业务层、Rollout 执行层与 Environment/Sandbox 层分别负责什么；

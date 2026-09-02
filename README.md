@@ -16,6 +16,9 @@
 
 这里只保留近期最值得反复复习的主线；完整笔记列表统一放在[总索引](INDEX.md)。
 
+- [MTP 辅助训练的接口、缩放与梯度契约](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md)
+- [Evaluation Core 与 Online EVO 训推链路](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md)
+- [MTP 精度 Parity 评测与统计边界](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md)
 - [Online EVO Rollout 架构与任务边界](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md)
 - [MTP 显存生命周期与 Allocator 性能归因](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md)
 - [Online MTP 训练成本、K/D 解耦与性能归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md)
@@ -28,6 +31,7 @@
 
 | 月份 | 主题概览 | 月度入口 |
 |---|---|---|
+| 2026 年 9 月 | MTP Auxiliary Training 正确性、Evaluation Core、Online EVO 训推链路、MTP 质量 Parity | [查看 9 月全部笔记](INDEX.md#2026-年-9-月) |
 | 2026 年 8 月 | Online EVO Rollout、MTP 显存生命周期与 allocator 归因、Online MTP K/D 解耦、MTP+CP/PP、Cohort、MoE Router Replay | [查看 8 月全部笔记](INDEX.md#2026-年-8-月) |
 | 2026 年 7 月 | LLM/Transformer 基础、训练与 RL、MoE/MTP、状态管理、Qwen3.5 GDN | [查看 7 月全部笔记](INDEX.md#2026-年-7-月) |
 

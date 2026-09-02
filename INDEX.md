@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-08-28
+> 最后更新：2026-09-02
 
 ## 按日期
 
@@ -33,6 +33,12 @@
 - [2026-08-28：MTP 显存生命周期与 Allocator 性能归因](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md)
 - [2026-08-28：Online EVO Rollout 架构与任务边界](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md)
 
+### 2026 年 9 月
+
+- [2026-09-02：MTP 辅助训练的接口、缩放与梯度契约](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md)
+- [2026-09-02：Evaluation Core 与 Online EVO 训推链路](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md)
+- [2026-09-02：MTP 精度 Parity 评测与统计边界](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md)
+
 ## 按主题
 
 ### Baseline 与推理工程
@@ -56,6 +62,8 @@
 - [Profiler、MoE All-to-All 与 CUDA Memory Snapshot 归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#8-profiler-应怎样做因果归因)
 - [MTP Logits/CE 生命周期、Allocator Segment 与 GPU Bubble](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#4-用-d1d2-时序理解-tensor-生命周期)
 - [Online EVO 的 Task→Trajectory、DatasetRouter 与执行分层](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#4-最小核心契约task--trajectory)
+- [Evaluation Core、可插拔 RolloutExecutor 与 TRAIN/EVAL 数据隔离](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#2-train_rollout-与-eval_rollout-是用途不只是名称)
+- [MTP 质量 Parity、统计等价与三张指标表](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md#8-质量性能和接受率是三张表)
 
 ### Transformer 基础
 
@@ -153,6 +161,10 @@
 - [Agentic-safe MTP Mask 与 Acceptance 指标口径](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#11-acceptance-length-与-acceptance-rate)
 - [Online EVO 为什么不等于 On-policy RL](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#3-online-在这里是什么意思)
 - [EVO 轨迹失败分类、版本提交与回放验证](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#7-并发执行时最容易出错的地方)
+- [MTP Auxiliary Label/Mask 的 Double-shift 风险](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md#2-label-与-mask最危险的是多-shift-一次)
+- [MTP Side Loss 的四类缩放与逐边梯度隔离](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md#3-辅助-loss-有四类正交缩放)
+- [TRAIN_ROLLOUT、EVAL_ROLLOUT 与 Online/Offline Eval](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#1-eval-本身不分-online--offline)
+- [MTP 精度 Parity 的同 Checkpoint A/B 与统计边界](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md#1-严格对照必须固定什么)
 
 ### 并行与状态管理
 
@@ -178,6 +190,8 @@
 - [HF Weight Warm Start 与完整断点续训](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#13-checkpoint精确续训与-weight-warm-start)
 - [Activation Recompute、全词表张量与 Allocator Snapshot 边界](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#3-activation-recompute-到底保存了什么)
 - [Online EVO Rollout 的版本化 Task/Trajectory 状态](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#8-版本与正确性)
+- [Packed/CP Layout、Runtime Capability 与 Recompute ABI](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md#5-cp-正确性同时包含-layout-与-scale)
+- [Candidate、Attempt、Episode 与 EvalResult 的状态边界](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#3-evaluation-core-的对象边界)
 
 ### 快速复习
 
@@ -208,6 +222,9 @@
 - [Online MTP 训练成本与性能归因复习](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#16-一分钟复习)
 - [MTP 显存生命周期与 Allocator 归因复习](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#11-一分钟复习)
 - [Online EVO Rollout 架构复习](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#13-一分钟复习)
+- [MTP 辅助训练接口与缩放复习](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md#13-一分钟复习)
+- [Evaluation Core 与 Online EVO 复习](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#14-一分钟复习)
+- [MTP 精度 Parity 与统计边界复习](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md#13-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
 ## 待深入专题
