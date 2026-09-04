@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-09-02
+> 最后更新：2026-09-03
 
 ## 按日期
 
@@ -38,6 +38,7 @@
 - [2026-09-02：MTP 辅助训练的接口、缩放与梯度契约](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md)
 - [2026-09-02：Evaluation Core 与 Online EVO 训推链路](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md)
 - [2026-09-02：MTP 精度 Parity 评测与统计边界](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md)
+- [2026-09-03：Rollout 会话准入与阶段并发契约](notes/2026/09/Rollout会话准入与阶段并发契约_20260903.md)
 
 ## 按主题
 
@@ -63,6 +64,7 @@
 - [MTP Logits/CE 生命周期、Allocator Segment 与 GPU Bubble](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#4-用-d1d2-时序理解-tensor-生命周期)
 - [Online EVO 的 Task→Trajectory、DatasetRouter 与执行分层](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#4-最小核心契约task--trajectory)
 - [Evaluation Core、可插拔 RolloutExecutor 与 TRAIN/EVAL 数据隔离](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#2-train_rollout-与-eval_rollout-是用途不只是名称)
+- [Rollout 会话的可信准入、phase_id 与阶段内并发](notes/2026/09/Rollout会话准入与阶段并发契约_20260903.md#2-为什么只传用途标签不够)
 - [MTP 质量 Parity、统计等价与三张指标表](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md#8-质量性能和接受率是三张表)
 
 ### Transformer 基础
@@ -224,6 +226,7 @@
 - [Online EVO Rollout 架构复习](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#13-一分钟复习)
 - [MTP 辅助训练接口与缩放复习](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md#13-一分钟复习)
 - [Evaluation Core 与 Online EVO 复习](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#14-一分钟复习)
+- [Rollout 会话准入与阶段并发复习](notes/2026/09/Rollout会话准入与阶段并发契约_20260903.md#7-一分钟复习)
 - [MTP 精度 Parity 与统计边界复习](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md#13-一分钟复习)
 - [后续学习路线](notes/2026/07/基础理论_20260723.md#第十五部分后续学习路线)
 
