@@ -6,6 +6,8 @@
 >
 > 状态：已整理；具体工程 Schema 仍待目标系统确认
 
+> 2026-09-07 补录的职责细化：后续设计将作业编排/调度放到 EvaluationService、EpisodeScheduler，EvaluationCore 收窄为评分、有效性和聚合；见 [9 月 4 日安全切换与统一评测服务](TRAIN与EVAL安全切换及统一评测服务_20260904.md)。本文早期 `Core → Executor` 表达的是整体评测能力，不能据此让评分核心直接管理 Sandbox。
+
 ## 0. 这篇笔记解决什么问题
 
 最容易画错的链路是：

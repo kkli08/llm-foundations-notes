@@ -119,11 +119,13 @@ MTP 输入投影
 
 假设训练两个 MTP Depth，并且 CE 需要为 Backward 保存 FP32 状态。
 
+> 2026-09-07 修订：下面只展开 Projection/CE 的张量生命周期，不规定 MTP Core 与各 Depth Loss 必须交错执行。实现也可能先生成多 Depth hidden，再逐 Depth 投影和计算 CE；要以实际调用顺序与 Snapshot 为准。
+
 ### 4.1 Depth 1
 
 ```text
-D1 MTP Core
-→ D1 BF16 Logits
+D1 Hidden 已准备
+→ D1 Projection / BF16 Logits
 → D1 CE
 → 保存 D1 FP32 Softmax/CE 状态供 Backward
 ```
@@ -133,9 +135,8 @@ D1 CE 结束后，D1 BF16 Logits 若不再需要可以释放；但 D1 FP32 CE �
 ### 4.2 Depth 2
 
 ```text
-D1 FP32 CE 状态仍存活
-→ D2 MTP Core
-→ D2 BF16 Logits
+D1 FP32 CE 状态仍存活，D2 Hidden 已准备
+→ D2 Projection / BF16 Logits
 → D2 CE
 → 创建并保存 D2 FP32 CE 状态
 ```
@@ -155,7 +156,7 @@ D1 BF16 Logits + D1 FP32 状态
 + D2 BF16 Logits + D2 FP32 状态
 ```
 
-因为 D1 BF16 Logits 通常在 D2 Projection 返回前已经失去最后使用点。
+必须区分两个窗口：D2 Projection 计算期间，D1 BF16 Logits 仍可能因旧引用保留；Projection 完成并更新引用后，它才可能释放。因此 D2 Projection 和 D2 CE 的活跃集合不一定相同，不能仅从“数学上不再需要”推断 allocator 已回收。
 
 ### 4.3 一个 Shape 推导示例
 
