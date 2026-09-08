@@ -14,23 +14,22 @@
 
 ## 当前学习主线
 
-这里只保留近期最值得反复复习的主线；完整笔记列表统一放在[总索引](INDEX.md)。本轮于 2026-09-07 补录 9 月 3～4 日内容，先读安全切换，再读部署证据，最后回顾多深度梯度。
+这里只保留近期最值得反复复习的主线；完整笔记列表统一放在[总索引](INDEX.md)。2026-09-08 更新：先沿四次采样理解 Task→Job→准入→结果，再读评测服务的持久化与恢复，最后复习缓存风险的证据边界。9 月 7 日内容仍归入原日期。
 
+- [Agentic RL 任务身份、准入与真实数据流](notes/2026/09/AgenticRL任务身份准入与真实数据流_20260908.md)
+- [统一评测服务的执行所有权与持久化恢复](notes/2026/09/统一评测服务的执行所有权与持久化恢复_20260907.md)
+- [配置三态与 Prefix Cache 风险证据](notes/2026/09/配置三态与PrefixCache风险证据_20260907.md)
 - [TRAIN/EVAL 安全切换与统一评测服务](notes/2026/09/TRAIN与EVAL安全切换及统一评测服务_20260904.md)
 - [分布式训推部署的运行契约与成功证据](notes/2026/09/分布式训推部署的运行契约与成功证据_20260904.md)
 - [MTP 多深度梯度与全局裁剪](notes/2026/09/MTP多深度梯度与全局裁剪_20260903.md)
 - [MTP 辅助训练的接口、缩放与梯度契约](notes/2026/09/MTP辅助训练的接口缩放与梯度契约_20260902.md)
-- [Evaluation Core 与 Online EVO 训推链路](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md)
 - [MTP 精度 Parity 评测与统计边界](notes/2026/09/MTP精度Parity评测与统计边界_20260902.md)
-- [Online EVO Rollout 架构与任务边界](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md)
-- [MTP 显存生命周期与 Allocator 性能归因](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md)
-- [Online MTP 训练成本、K/D 解耦与性能归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md)
 
 ## 按月浏览
 
 | 月份 | 主题概览 | 月度入口 |
 |---|---|---|
-| 2026 年 9 月 | TRAIN/EVAL 切换、统一评测服务、部署运行契约、多深度梯度与裁剪、MTP 质量 Parity | [查看 9 月全部笔记](INDEX.md#2026-年-9-月) |
+| 2026 年 9 月 | Agent 任务身份与准入、评测服务持久化、TRAIN/EVAL 切换、缓存风险、部署证据、多深度梯度 | [查看 9 月全部笔记](INDEX.md#2026-年-9-月) |
 | 2026 年 8 月 | Online EVO Rollout、MTP 显存生命周期与 allocator 归因、Online MTP K/D 解耦、MTP+CP/PP、Cohort、MoE Router Replay | [查看 8 月全部笔记](INDEX.md#2026-年-8-月) |
 | 2026 年 7 月 | LLM/Transformer 基础、训练与 RL、MoE/MTP、状态管理、Qwen3.5 GDN | [查看 7 月全部笔记](INDEX.md#2026-年-7-月) |
 

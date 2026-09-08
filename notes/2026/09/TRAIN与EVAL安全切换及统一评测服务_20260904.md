@@ -6,6 +6,8 @@
 >
 > 状态：通用设计理解；不代表具体系统已实现或通过端到端测试。
 
+> 2026-09-08 修订：旧文对“整条 TRAIN Session 固定版本”的要求只是一个条件模型，不是当前唯一合同。新设计允许 TRAIN 保留历史片段版本、后续使用冻结窗口 V；不自动选择 drain-first。详见[最新数据流与版本语义](AgenticRL任务身份准入与真实数据流_20260908.md)。通用 Service 的执行与恢复见[9 月 7 日笔记](统一评测服务的执行所有权与持久化恢复_20260907.md)。
+
 ## 0. 从你的 Database/Runtime 背景理解
 
 可以把这件事理解成：**停止接收新事务，固定读版本，让已准入的工作完成，再安全恢复写入。**但这里一条 Agent task 包含多轮模型请求和 Sandbox 资源，不能只统计当前正在 GPU 上运行的请求。
@@ -36,8 +38,8 @@ Fence 可以理解为一条原子的截止线：登记哪些 TRAIN task 已经�
 1. 关闭新 TRAIN task 准入，拿到 fence 前合法 reservation 的集合/水位。
 2. 冻结未分配 TRAIN capacity，保留已准入任务完成所需的资格。
 3. 暂停新的参数更新和推理权重发布，把评测模型固定为 V。
-4. 确认 Gateway 会按不可变 purpose、phase、version 校验和分流。
-5. 确认版本兼容及资源能支持重叠，否则先排空 TRAIN。
+4. 确认 Gateway 会按不可变用途/阶段身份及明确的版本合同校验、分流，不把三者都等同于整条会话不变版。
+5. 确认所选版本语义及资源能支持重叠；无法满足则停止激活，不能擅自改变合同。
 
 ### 恢复 TRAIN：执行面 quiescence
 
@@ -76,7 +78,7 @@ t6：恢复新的 TRAIN phase
 - 先排空旧 TRAIN，再切换为 V1；
 - 明确提供多版本 Serving，并把请求路由到绑定版本。
 
-若算法允许 TRAIN 会话跨版本，需另立语义与逐请求 provenance，不能偷偷放松约束。第一版单版本后端应显式选择兼容重叠或排空降级，而不是假设多版本能力存在。
+若算法允许 TRAIN 会话跨版本，需另立语义与逐请求/片段 provenance，不能偷偷放松约束。9 月 7～8 日当前设计已经明确选择这一合同：保留历史实际版本，窗口后的 TRAIN 请求使用 V，EVAL 固定 V；不自动采用排空降级。以上三个选项仅适用于“整条会话必须不变版”的前提。
 
 ## 5. 为什么全局 pause generation 可能造成死锁
 
@@ -118,7 +120,7 @@ Fixed Step Eval / Online EVO / Harness Optimization
 | EvalWindowManager | 共享训练 Runtime 的阶段窗口 | 独立评测不必经过它 |
 | EpisodeScheduler | 并发、预算、超时、重试与收口 | 不决定 fitness 公式 |
 | EpisodeExecutor | 跑一条 episode、返回结果并释放资源 | 不跨 episode 聚合 |
-| EvaluationCore | 评分、有效性校验、归约与指标 | 不启动 Sandbox、不调用模型、不切训练阶段 |
+| EvaluationCore | 有效性校验、可插拔评分、归约与指标 | 不编排 Sandbox、不切训练阶段；Scorer 可调用 Judge，纯聚合不执行模型 |
 
 这里是对早期 [Evaluation Core 笔记](EvaluationCore与OnlineEVO训推链路_20260902.md) 的职责细化：编排职责放到 Service/Scheduler，Core 收窄成可独立测试的评分聚合核心。共享的是协议与语义，不强制共享所有 Runtime。
 
@@ -135,7 +137,7 @@ Fixed Step Eval / Online EVO / Harness Optimization
 - fence 前/后并发到达的 task，只有合法旧 reservation 能继续。
 - EVAL 的 success、retry、abort、timeout 结果都不会进入 TRAIN Cohort。
 - EVAL 全程使用实际版本 V，不只检查请求字段写了 V。
-- 单版本但 V0/V1 不兼容时，必须降级排空，不静默重绑。
+- 要求会话不变版时，不能单版本 Serving 混用 V0/V1；允许 TRAIN 跨片段版本时，验证历史 provenance 和窗口 V，不能把历史重写成 V。
 - 重复 transition 幂等；旧 phase 的迟到结果归回旧 phase。
 - EVAL 失败也能收口资源与版本屏障；恢复的 source cursor 不丢不重。
 - 在模型请求数为零但 Agent 等待工具时，不得误报已排空。
@@ -149,3 +151,4 @@ Fixed Step Eval / Online EVO / Harness Optimization
 ## 整理记录
 
 - 2026-09-07：补录 9 月 4 日的设计演进，并显式补齐单版本 Serving 的必要条件；这是设计约束澄清，不是新增实现证据。
+- 2026-09-08：修正过度收紧的整会话版本假设与“不允许模型评分”的表述，保留条件逻辑并链接新合同。
