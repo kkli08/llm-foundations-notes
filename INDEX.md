@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-09-08（补录 9 月 7 日，新增 9 月 8 日数据流答疑）
+> 最后更新：2026-09-09（补录 9 月 8 日晚间 MTP 输出端性能诊断）
 
 ## 按日期
 
@@ -45,6 +45,7 @@
 - [2026-09-07：统一评测服务的执行所有权与持久化恢复](notes/2026/09/统一评测服务的执行所有权与持久化恢复_20260907.md)
 - [2026-09-07：配置三态与 Prefix Cache 风险证据](notes/2026/09/配置三态与PrefixCache风险证据_20260907.md)
 - [2026-09-08：Agentic RL 任务身份、准入与真实数据流](notes/2026/09/AgenticRL任务身份准入与真实数据流_20260908.md)
+- [2026-09-08：MTP 输出端反向、激活重算与性能证据链](notes/2026/09/MTP输出端反向与激活重算证据链_20260908.md)
 
 ## 按主题
 
@@ -73,6 +74,7 @@
 - [Actor Logprob 重算、Activation Recompute 与 CE Fusion 边界](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#5-两种-recompute-必须严格区分)
 - [Profiler、MoE All-to-All 与 CUDA Memory Snapshot 归因](notes/2026/08/OnlineMTP训练成本与性能归因_20260826.md#8-profiler-应怎样做因果归因)
 - [MTP Logits/CE 生命周期、Allocator Segment 与 GPU Bubble](notes/2026/08/MTP显存生命周期与Allocator性能归因_20260828.md#4-用-d1d2-时序理解-tensor-生命周期)
+- [MTP 输出头反向、head+CE checkpoint 与性能证据边界](notes/2026/09/MTP输出端反向与激活重算证据链_20260908.md)
 - [Online EVO 的 Task→Trajectory、DatasetRouter 与执行分层](notes/2026/08/OnlineEVO_Rollout架构与任务边界_20260828.md#4-最小核心契约task--trajectory)
 - [Evaluation Core、可插拔 RolloutExecutor 与 TRAIN/EVAL 数据隔离](notes/2026/09/EvaluationCore与OnlineEVO训推链路_20260902.md#2-train_rollout-与-eval_rollout-是用途不只是名称)
 - [Rollout 会话的可信准入、phase_id 与阶段内并发](notes/2026/09/Rollout会话准入与阶段并发契约_20260903.md#2-为什么只传用途标签不够)
