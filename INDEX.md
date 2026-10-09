@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-09-18；[本周复习路线](reviews/2026-W38.md)。补录内容按实际发生日期记录。
+> 最后更新：2026-10-09；[本周复习路线](reviews/2026-W38.md)。补录内容按实际发生日期记录。
 
 ## 按日期
 
@@ -56,10 +56,19 @@
 - [2026-09-17：训练显存与分布式保存故障归因](notes/2026/09/训练显存与分布式保存故障归因_20260917.md)
 - [2026-09-18：条件广播与训练峰值显存](notes/2026/09/条件广播与训练峰值显存_20260918.md)
 
+### 2026 年 10 月
+
+- [2026-10-08：路由回放与动态形状的显存归因](notes/2026/10/路由回放与动态形状的显存归因_20261008.md)
+- [2026-10-08：权重同步版本语义与 Staleness 窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
+- [2026-10-09：PP、CP 与 SP 的切分对象与通信代价](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md)
+- [2026-10-09：Rollout 瓶颈下的 GPU 利用率与对照变量](notes/2026/10/Rollout瓶颈下的GPU利用率与对照变量_20261009.md)
+
 ## 按主题
 
 ### Baseline 与推理工程
 
+- [训推分离的低利用率、长尾、KV 抢占与单变量对照](notes/2026/10/Rollout瓶颈下的GPU利用率与对照变量_20261009.md)
+- [Route 驻留范围、dtype 升级、校验分级与动态形状碎片](notes/2026/10/路由回放与动态形状的显存归因_20261008.md)
 - [训练显存组成、保存 OOM 与干净性能基线](notes/2026/09/训练显存与分布式保存故障归因_20260917.md)
 - [条件广播、激活保存与分块计算的峰值边界](notes/2026/09/条件广播与训练峰值显存_20260918.md)
 - [评测覆盖、清理终态与关闭失败](notes/2026/09/评测覆盖与资源收口的双重终态_20260916.md)
@@ -144,6 +153,7 @@
 
 ### 训练与后训练
 
+- [版本号 = Policy 版本、Staleness 容量与离策略窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
 - [冻结输出头仍需 Hidden 梯度与原生并行契约](notes/2026/09/冻结输出头梯度与原生并行契约_20260915.md)
 - [整次更新 Token 加权、DP/CP 分母、显式辅助 Loss 与 Detach](notes/2026/09/MTP全局Token归一化与多深度梯度_20260911.md)
 - [架构、参数、激活值、Loss 与 Checkpoint](notes/2026/07/训练与RL后训练基础_20260724.md#2-训练问题的共同语言)
@@ -201,6 +211,7 @@
 
 ### 并行与状态管理
 
+- [PP 空泡、MTP Embedding 副本、CP Zigzag/Ring/All-to-All 与 TP 的 SP](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md)
 - [MTP 直接梯度隔离为什么不等于全局裁剪后的更新等价](notes/2026/09/MTP多深度梯度与全局裁剪_20260903.md)
 - [常见并行策略：DP、TP、PP、EP、CP](notes/2026/07/训练与RL后训练基础_20260724.md#9-常见并行策略的最低认知)
 - [训练与推理 Checkpoint](notes/2026/07/训练与RL后训练基础_20260724.md#26-checkpoint)
@@ -266,7 +277,7 @@
 
 - MoE、Router Scores/Top-K/加权聚合、TP/EP/PP、Local/Global 编号与 Online Router Replay 已有任务所需完整认知；Load Balance Loss、All-to-All Kernel、EPLB 和 EP 性能优化仍待深入；
 - Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；推理并发与 Continuous Batching 仍待深入；
-- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP/PP 正确性契约已覆盖；VPP>1 Ownership、CP Collective、Packed THD 与 GDN State 的底层布局仍待深入；
+- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP/PP 正确性契约已覆盖；PP 空泡、CP Zigzag/Ring/All-to-All 与 SP 已有入门（2026-10-09）；VPP>1 Ownership、Packed THD 与 GDN State 的底层布局仍待深入；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
