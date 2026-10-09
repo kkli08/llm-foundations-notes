@@ -60,13 +60,16 @@
 
 - [2026-10-08：路由回放与动态形状的显存归因](notes/2026/10/路由回放与动态形状的显存归因_20261008.md)
 - [2026-10-08：权重同步版本语义与 Staleness 窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
-- [2026-10-09：PP、CP 与 SP 的切分对象与通信代价](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md)
+- [2026-10-09：PP、CP 与 SP 的切分对象与通信代价（含 SP 激活与梯度、激活值复习）](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md)
 - [2026-10-09：Rollout 瓶颈下的 GPU 利用率与对照变量](notes/2026/10/Rollout瓶颈下的GPU利用率与对照变量_20261009.md)
+- [2026-10-09：多轮 Agent RL 的 Reward 崩溃与归因实验](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md)
+- [2026-10-09：Agentic Rollout 吞吐分解与整组拒收](notes/2026/10/AgenticRollout吞吐分解与整组拒收_20261009.md)
 
 ## 按主题
 
 ### Baseline 与推理工程
 
+- [并发漏斗、Amdahl/Little 分解、整组拒收放大与 401 次生错误](notes/2026/10/AgenticRollout吞吐分解与整组拒收_20261009.md)
 - [训推分离的低利用率、长尾、KV 抢占与单变量对照](notes/2026/10/Rollout瓶颈下的GPU利用率与对照变量_20261009.md)
 - [Route 驻留范围、dtype 升级、校验分级与动态形状碎片](notes/2026/10/路由回放与动态形状的显存归因_20261008.md)
 - [训练显存组成、保存 OOM 与干净性能基线](notes/2026/09/训练显存与分布式保存故障归因_20260917.md)
@@ -153,10 +156,12 @@
 
 ### 训练与后训练
 
+- [Reward 崩溃：每轮输出塌缩、全零组批归一化放大、KL 进 Reward 的长度压力与归因实验](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md)
 - [版本号 = Policy 版本、Staleness 容量与离策略窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
 - [冻结输出头仍需 Hidden 梯度与原生并行契约](notes/2026/09/冻结输出头梯度与原生并行契约_20260915.md)
 - [整次更新 Token 加权、DP/CP 分母、显式辅助 Loss 与 Detach](notes/2026/09/MTP全局Token归一化与多深度梯度_20260911.md)
 - [架构、参数、激活值、Loss 与 Checkpoint](notes/2026/07/训练与RL后训练基础_20260724.md#2-训练问题的共同语言)
+- [激活值为什么要为反向保存、为什么随序列线性增长](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md#39-激活值复习为什么训练要存为什么随序列变长)
 - [预训练](notes/2026/07/训练与RL后训练基础_20260724.md#3-预训练先学会预测文本中的下一个-token)
 - [SFT](notes/2026/07/训练与RL后训练基础_20260724.md#4-sft仍然预测-token但数据变成了理想行为示范)
 - [RL 后训练闭环](notes/2026/07/训练与RL后训练基础_20260724.md#5-rl-后训练模型从评价结果中继续学习)
@@ -212,6 +217,7 @@
 ### 并行与状态管理
 
 - [PP 空泡、MTP Embedding 副本、CP Zigzag/Ring/All-to-All 与 TP 的 SP](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md)
+- [SP 传激活不传参数、反向重 All-Gather 与复制参数梯度求和](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md#38-sp-补充传的是激活值不是参数)
 - [MTP 直接梯度隔离为什么不等于全局裁剪后的更新等价](notes/2026/09/MTP多深度梯度与全局裁剪_20260903.md)
 - [常见并行策略：DP、TP、PP、EP、CP](notes/2026/07/训练与RL后训练基础_20260724.md#9-常见并行策略的最低认知)
 - [训练与推理 Checkpoint](notes/2026/07/训练与RL后训练基础_20260724.md#26-checkpoint)
@@ -277,12 +283,12 @@
 
 - MoE、Router Scores/Top-K/加权聚合、TP/EP/PP、Local/Global 编号与 Online Router Replay 已有任务所需完整认知；Load Balance Loss、All-to-All Kernel、EPLB 和 EP 性能优化仍待深入；
 - Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；推理并发与 Continuous Batching 仍待深入；
-- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP/PP 正确性契约已覆盖；PP 空泡、CP Zigzag/Ring/All-to-All 与 SP 已有入门（2026-10-09）；VPP>1 Ownership、Packed THD 与 GDN State 的底层布局仍待深入；
+- Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP/PP 正确性契约已覆盖；PP 空泡、CP Zigzag/Ring/All-to-All 与 SP（含反向重 Gather、复制参数梯度求和）已有入门（2026-10-09）；VPP>1 Ownership、Packed THD 与 GDN State 的底层布局仍待深入；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；GAE、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；GAE 一般形式、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
