@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-10-10；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
+> 最后更新：2026-10-11；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
 
 ## 按日期
 
@@ -70,6 +70,9 @@
 - [2026-10-09：多轮 Agent RL 的 Reward 崩溃与归因实验（含晚间同期对照补充）](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md)
 - [2026-10-09：Agentic Rollout 吞吐分解与整组拒收](notes/2026/10/AgenticRollout吞吐分解与整组拒收_20261009.md)
 - [2026-10-09：Benchmark 对照的负载等价与读数混杂（10 月 10 日补录）](notes/2026/10/Benchmark对照的负载等价与读数混杂_20261009.md)
+- [2026-10-10：路由回放的代价转移与效果验证（10 月 11 日补录）](notes/2026/10/路由回放的代价转移与效果验证_20261010.md)
+- [2026-10-10：RL 训练健康检查顺序与熵的两种失败方向（10 月 11 日补录）](notes/2026/10/RL训练健康检查顺序与熵的两种失败方向_20261010.md)
+- [2026-10-10：HF 导出索引一致性与旧 MTP 头的取舍（10 月 11 日补录）](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md)
 
 ## 按主题
 
@@ -85,6 +88,8 @@
 
 ### Baseline 与推理工程
 
+- [兼容代码先追溯意图再删、按触发条件归类问题](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md#31-一个多余开关的来历先追溯再删除)
+- [驻留优化的显存→时间代价转移、按有效 Token 归一化、只比受影响阶段](notes/2026/10/路由回放的代价转移与效果验证_20261010.md)
 - [负载等价与健康窗口、截断伪造的 Reward 涨幅、版本配额下的同步前并发下降](notes/2026/10/Benchmark对照的负载等价与读数混杂_20261009.md)
 - [并发漏斗、Amdahl/Little 分解、整组拒收放大与 401 次生错误](notes/2026/10/AgenticRollout吞吐分解与整组拒收_20261009.md)
 - [训推分离的低利用率、长尾、KV 抢占与单变量对照](notes/2026/10/Rollout瓶颈下的GPU利用率与对照变量_20261009.md)
@@ -151,6 +156,7 @@
 - [自然路由 Drift 与 Replay 正确性门禁](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#9-自然路由差异不等于-capture-错误)
 - [Ray Object Store、Spill 与 DP Group 内 NCCL 分发](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#81-ray-objectref-到消费端的数据流)
 - [R3 内存主链路与 Debug Dump 的真实异步边界](notes/2026/08/MoERouterReplay与训推路由一致性_20260817.md#71-2026-08-26-实现边界补充)
+- [回放效果验证：固定 Rollout、训练侧开关回放、比逐 Token 差异的长尾](notes/2026/10/路由回放的代价转移与效果验证_20261010.md#35-训推一致性均值看不见长尾)
 
 ### 推理流程
 
@@ -175,6 +181,7 @@
 
 - [Reward 崩溃：每轮输出塌缩、全零组批归一化放大、KL 进 Reward 的长度压力与归因实验](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md)
 - [崩溃前兆的先后、停止规则的误停与迟停、同期对照](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md#38-同期对照的逐步观察)
+- [健康检查六步顺序、Reward 滞后、熵上冲与熵下降两种失败、组内同分非零](notes/2026/10/RL训练健康检查顺序与熵的两种失败方向_20261010.md)
 - [截断率下降为什么会抬高训练 Reward](notes/2026/10/Benchmark对照的负载等价与读数混杂_20261009.md#32-截断伪造的-reward-涨幅)
 - [版本号 = Policy 版本、Staleness 容量与离策略窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
 - [Staleness 配额完成不归还：同步前在途下降，推理越快空等越长](notes/2026/10/Benchmark对照的负载等价与读数混杂_20261009.md#33-版本配额与同步前的并发下降)
@@ -209,10 +216,12 @@
 - [MTP Label、Mask 与 RL Total Loss](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#7-每个训练-step-怎样训练-mtp)
 - [`detach_encoder` 与梯度边界](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#8-detach_encoder-的梯度边界)
 - [MTP 与 Speculative Decoding 的关系](notes/2026/07/MTPHead状态机与训练适配边界_20260728.md#11-speculative-decoding-与-mtp-的关系)
+- [关闭 MTP 训练时带上旧 MTP 头：推测解码无损，旧头只影响接受率](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md#34-旧-mtp-头带上还是去掉被纠正的判断)
 - [Trajectory、Packed Sequence 与训练 Tensor](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#3-trajectory-到训练-tensor-的对象变化)
 - [Segment-aware MTP Label 与 Mask](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#5-ntpmtp-label-与-segment-aware-mask)
 - [动态 Token Loss 归一化与三种 Scale](notes/2026/07/RL轨迹到Megatron与MTP损失归一化_20260728.md#6-loss-reduction归约是什么意思)
 - [DCP、HF Export 与 Online Weight Sync](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#3-dcphf-checkpoint-和-online-weights-的区别)
+- [分片 safetensors 索引的双向一致性与按分片文件头重建](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md#33-索引多列触发场景与影响面)
 - [Qwen3.5 GDN 的 Training、Prefill、Decode 与 MTP 状态边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#9-trainingprefilldecode-都使用这套架构)
 - [Logit、Probability、Logprob 与 Sequence Logprob](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#2-logprob-到底是什么)
 - [On-policy、Off-policy 与训推挑战](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#3-on-policy-和-off-policy)
@@ -308,7 +317,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；GAE 一般形式、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GAE 一般形式、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
