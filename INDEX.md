@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-10-11；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
+> 最后更新：2026-10-12；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
 
 ## 按日期
 
@@ -73,6 +73,8 @@
 - [2026-10-10：路由回放的代价转移与效果验证（10 月 11 日补录）](notes/2026/10/路由回放的代价转移与效果验证_20261010.md)
 - [2026-10-10：RL 训练健康检查顺序与熵的两种失败方向（10 月 11 日补录）](notes/2026/10/RL训练健康检查顺序与熵的两种失败方向_20261010.md)
 - [2026-10-10：HF 导出索引一致性与旧 MTP 头的取舍（10 月 11 日补录）](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md)
+- [2026-10-12：GRPO 一步的流水线与批级 Advantage 归一化的偏移机制](notes/2026/10/GRPO流程与批级Advantage归一化的偏移机制_20261012.md)
+- [2026-10-12：训练崩溃归因的工作流与实验解读](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md)
 
 ## 按主题
 
@@ -179,6 +181,9 @@
 
 ### 训练与后训练
 
+- [GRPO 六段流水线、GRPO = V≡0/γ=λ=1 的 GAE、批级归一化的平移与放大、截断采样下的长尾偏移（假说）](notes/2026/10/GRPO流程与批级Advantage归一化的偏移机制_20261012.md)
+- [归因七步工作流、KL 主因假设被否定、外部稳定配置的证明边界、打包实验的隐含混杂](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md)
+- [clip-higher、序列级重要性采样等稳定配方开关的含义](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md#22-移植配方里的几类开关)
 - [Reward 崩溃：每轮输出塌缩、全零组批归一化放大、KL 进 Reward 的长度压力与归因实验](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md)
 - [崩溃前兆的先后、停止规则的误停与迟停、同期对照](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md#38-同期对照的逐步观察)
 - [健康检查六步顺序、Reward 滞后、熵上冲与熵下降两种失败、组内同分非零](notes/2026/10/RL训练健康检查顺序与熵的两种失败方向_20261010.md)
@@ -317,7 +322,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GAE 一般形式、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定），DAPO/GSPO 完整设计动机仍待深入；GAE 一般形式、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
