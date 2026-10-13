@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-10-12；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
+> 最后更新：2026-10-13；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
 
 ## 按日期
 
@@ -75,6 +75,8 @@
 - [2026-10-10：HF 导出索引一致性与旧 MTP 头的取舍（10 月 11 日补录）](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md)
 - [2026-10-12：GRPO 一步的流水线与批级 Advantage 归一化的偏移机制](notes/2026/10/GRPO流程与批级Advantage归一化的偏移机制_20261012.md)
 - [2026-10-12：训练崩溃归因的工作流与实验解读](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md)
+- [2026-10-13：PPO 四个角色、Critic 与 Clip 在单次更新下的退化](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
+- [2026-10-13：GRPO 变体与 Reward/Advantage 两层归一化的拆解](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md)
 
 ## 按主题
 
@@ -181,6 +183,10 @@
 
 ### 训练与后训练
 
+- [PPO 四个角色、Critic 结构与训练、九段流程、KL 两种放法、单次更新时 ratio ≡ 1 的 Clip 退化、重算 Logprob 的两个比值](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
+- [GAE 的 λ 偏差/方差与长序列衰减、PPO 与 GRPO 的组内长尾差异](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md#35-ppo--gae-能否比-grpo-更好地分配功劳)
+- [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
+- [Reward 与 Advantage 两层归一化、两个“按 Token”、按 Token vs 按轨迹统计、只改配置拆开平移与缩放](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md)
 - [GRPO 六段流水线、GRPO = V≡0/γ=λ=1 的 GAE、批级归一化的平移与放大、截断采样下的长尾偏移（假说）](notes/2026/10/GRPO流程与批级Advantage归一化的偏移机制_20261012.md)
 - [归因七步工作流、KL 主因假设被否定、外部稳定配置的证明边界、打包实验的隐含混杂](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md)
 - [clip-higher、序列级重要性采样等稳定配方开关的含义](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md#22-移植配方里的几类开关)
@@ -322,7 +328,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定），DAPO/GSPO 完整设计动机仍待深入；GAE 一般形式、Critic Loss、Token-level Advantage、长度偏差与具体实现变体仍待深入；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO/GSPO 原论文推导仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
