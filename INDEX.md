@@ -80,6 +80,10 @@
 - [2026-10-13：路由回放的引用所有权、校验位置与开销拆解（含晚间冒烟结果读法）](notes/2026/10/路由回放的引用所有权校验位置与开销拆解_20261013.md)
 - [2026-10-13：Ray 进程模型、对象引用生命周期与重算队列（10 月 14 日补录）](notes/2026/10/Ray进程模型对象引用生命周期与重算队列_20261013.md)
 - [2026-10-13：导出产物的职责边界与“加载不训练”的 MTP 头（10 月 14 日补录）](notes/2026/10/导出产物职责与加载不训练的MTP头_20261013.md)
+- [2026-10-14：推理引擎的 KV 分页、连续批处理与 CUDA Graph](notes/2026/10/推理引擎的KV分页连续批处理与CUDAGraph_20261014.md)
+- [2026-10-14：GSPO 序列级比率与 PPO 论文精读](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
+- [2026-10-14：RL 断点恢复与训练故障的归因边界](notes/2026/10/RL断点恢复与训练故障的归因边界_20261014.md)
+- [2026-10-14：veRL 单控制器数据流与后训练 Infra 学习路线](notes/2026/10/veRL单控制器数据流与后训练Infra学习路线_20261014.md)
 
 ## 按主题
 
@@ -95,6 +99,8 @@
 
 ### Baseline 与推理工程
 
+- [RL 断点恢复存什么、长度曲线怎么判读、多任务同时卡住找共享依赖、嵌套计时不能相加、driver 补丁到不了 Ray worker](notes/2026/10/RL断点恢复与训练故障的归因边界_20261014.md)
+- [veRL：Single-Controller + SPMD、DataProto 三块、fit 主循环、算法需求到 Infra 设计的映射](notes/2026/10/veRL单控制器数据流与后训练Infra学习路线_20261014.md)
 - [兼容代码先追溯意图再删、按触发条件归类问题](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md#31-一个多余开关的来历先追溯再删除)
 - [开销先拆再优化（冗余 × 串行）、非关键路径的节省变成等待、估算给区间、主/参考两个基线](notes/2026/10/路由回放的引用所有权校验位置与开销拆解_20261013.md#34-取回为什么慢先拆开再优化)
 - [驻留优化的显存→时间代价转移、按有效 Token 归一化、只比受影响阶段](notes/2026/10/路由回放的代价转移与效果验证_20261010.md)
@@ -174,6 +180,9 @@
 - [KV Cache](notes/2026/07/基础理论_20260723.md#第七部分kv-cache)
 - [FlashAttention 与 PagedAttention](notes/2026/07/基础理论_20260723.md#第八部分flashattention-与-pagedattention)
 - [上下文越长为什么越慢](notes/2026/07/基础理论_20260723.md#第九部分为什么上下文越长越慢)
+- [KV 池容量、BlockPool 链式哈希与引用计数、前缀缓存为何换权重要清、抢占重算](notes/2026/10/推理引擎的KV分页连续批处理与CUDAGraph_20261014.md#33-blockpool-的三样东西)
+- [Continuous Batching：每步重排、“还差几个 token”、一维拼接与换权重的人为边界](notes/2026/10/推理引擎的KV分页连续批处理与CUDAGraph_20261014.md#36-continuous-batching每一步重新组-batch)
+- [CUDA Graph：固定地址/shape/路径、分档 padding、piecewise、权重必须原地更新](notes/2026/10/推理引擎的KV分页连续批处理与CUDAGraph_20261014.md#38-cuda-graph固定地址固定-shape固定路径)
 - [MTP、Draft、Verify 与 Cache 回滚](notes/2026/07/训练与RL后训练基础_20260724.md#7-mtp训练时多步预测推理时多-token-草拟)
 - [MTP 训练侧与推理侧怎样接起来](notes/2026/07/MTP标签损失与参数更新_20260726.md#7-训练侧-mtp-与推理侧-mtp-怎样接起来)
 - [推测解码：自回归串行与成块 Verify](notes/2026/07/MTP推测解码与成块验证_20260726.md#3-为什么自回归仍能成块-verify)
@@ -189,6 +198,8 @@
 
 ### 训练与后训练
 
+- [PPO 论文精读、GSPO 序列级几何平均 ratio 与梯度对比、MoE 路由抖动、实现与论文的三处差别、推理端 raw logprob 口径](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
+- [rollout 接入方式的“online”、先只读审查再分类修补](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md#35-online到底指什么)
 - [PPO 四个角色、Critic 结构与训练、九段流程、KL 两种放法、单次更新时 ratio ≡ 1 的 Clip 退化、重算 Logprob 的两个比值](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
 - [GAE 的 λ 偏差/方差与长序列衰减、PPO 与 GRPO 的组内长尾差异](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md#35-ppo--gae-能否比-grpo-更好地分配功劳)
 - [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
@@ -333,13 +344,13 @@
 ## 待深入专题
 
 - MoE、Router Scores/Top-K/加权聚合、TP/EP/PP、Local/Global 编号与 Online Router Replay 已有任务所需完整认知；Load Balance Loss、All-to-All Kernel、EPLB 和 EP 性能优化仍待深入；
-- Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；推理并发与 Continuous Batching 仍待深入；
+- Batch、Microbatch、Padding/Packing 和动态 Token Loss 归一化已有最小认知；Continuous Batching、KV 块池与前缀缓存、CUDA Graph 已有入门（2026-10-14）；piecewise 图切分、attention 元数据入图、多轮 Agent 等待时的 KV 处理仍待深入；
 - Tensor Parallel、Pipeline Parallel、Context Parallel 的分类和 MTP+CP/PP 正确性契约已覆盖；PP 空泡、CP Zigzag/Ring/All-to-All 与 SP（含反向重 Gather、复制参数梯度求和）已有入门（2026-10-09）；VPP>1 Ownership、Packed THD 与 GDN State 的底层布局仍待深入；
 - RoPE 与长上下文扩展；
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO/GSPO 原论文推导仍待深入；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；PPO 与 GSPO 原论文已精读（2026-10-14）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO 原论文、GSPO 梯度手推、推训偏差的 TIS/MIS 修正仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
