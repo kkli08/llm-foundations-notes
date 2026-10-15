@@ -85,6 +85,7 @@
 - [2026-10-14：RL 断点恢复与训练故障的归因边界](notes/2026/10/RL断点恢复与训练故障的归因边界_20261014.md)
 - [2026-10-14：veRL 单控制器数据流与后训练 Infra 学习路线](notes/2026/10/veRL单控制器数据流与后训练Infra学习路线_20261014.md)
 - [2026-10-14：采样截断与 Logprob 口径的训推偏差（10 月 15 日补录）](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md)
+- [2026-10-15：温度口径偏差的实测判读与 KL 放置位置](notes/2026/10/温度偏差实测与KL放置位置_20261015.md)
 
 ## 按主题
 
@@ -202,6 +203,9 @@
 - [PPO 论文精读、GSPO 序列级几何平均 ratio 与梯度对比、MoE 路由抖动、实现与论文的三处差别、推理端 raw logprob 口径](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
 - [rollout 接入方式的“online”、先只读审查再分类修补](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md#35-online到底指什么)
 - [top-p/top-k 截断的 `1/Z`、raw logprob 与温度不一致的比值偏差、采样参数逐段核对](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md)
+- [温度偏差实测：近似 KL 均值的符号、同模型只改温度、随熵收缩、几何平均抵消；“不可能的读数”查定义](notes/2026/10/温度偏差实测与KL放置位置_20261015.md)
+- [KL 进 Reward 与进 Loss 完整对比、GRPO 下 GAE 只是广播、双开与 ref 温度两个实现缺口](notes/2026/10/温度偏差实测与KL放置位置_20261015.md#39-kl-的两种放法完整对比)
+- [批级归一化答疑：作用于每个 token、整批只算一次、归一化的是 advantage、零方差组的构成翻转](notes/2026/10/温度偏差实测与KL放置位置_20261015.md#35-批级归一化影响的不只是零方差组被纠正的误解)
 - [PPO 四个角色、Critic 结构与训练、九段流程、KL 两种放法、单次更新时 ratio ≡ 1 的 Clip 退化、重算 Logprob 的两个比值](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
 - [GAE 的 λ 偏差/方差与长序列衰减、PPO 与 GRPO 的组内长尾差异](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md#35-ppo--gae-能否比-grpo-更好地分配功劳)
 - [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
@@ -353,7 +357,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；PPO 与 GSPO 原论文已精读（2026-10-14）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO 原论文、GSPO 梯度手推、推训偏差的 TIS/MIS 修正仍待深入；采样截断的 `1/Z`、raw logprob 与温度口径对 `π_prox/π_behave` 的影响已有入门（2026-10-14，实际偏差大小待验证）；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；PPO 与 GSPO 原论文已精读（2026-10-14）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO 原论文、GSPO 梯度手推、推训偏差的 TIS/MIS 修正仍待深入；采样截断的 `1/Z`、raw logprob 与温度口径对 `π_prox/π_behave` 的影响已有入门（2026-10-14）；温度偏差已实测（2026-10-15：方向确认、序列级量级很小），`1/Z` 截断偏差仍待验证；KL 两种放法的完整对比已补齐（2026-10-15），k1/k2/k3 估计器推导仍待深入；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
