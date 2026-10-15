@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-10-14；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
+> 最后更新：2026-10-15；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
 
 ## 按日期
 
@@ -84,6 +84,7 @@
 - [2026-10-14：GSPO 序列级比率与 PPO 论文精读](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
 - [2026-10-14：RL 断点恢复与训练故障的归因边界](notes/2026/10/RL断点恢复与训练故障的归因边界_20261014.md)
 - [2026-10-14：veRL 单控制器数据流与后训练 Infra 学习路线](notes/2026/10/veRL单控制器数据流与后训练Infra学习路线_20261014.md)
+- [2026-10-14：采样截断与 Logprob 口径的训推偏差（10 月 15 日补录）](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md)
 
 ## 按主题
 
@@ -200,6 +201,7 @@
 
 - [PPO 论文精读、GSPO 序列级几何平均 ratio 与梯度对比、MoE 路由抖动、实现与论文的三处差别、推理端 raw logprob 口径](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
 - [rollout 接入方式的“online”、先只读审查再分类修补](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md#35-online到底指什么)
+- [top-p/top-k 截断的 `1/Z`、raw logprob 与温度不一致的比值偏差、采样参数逐段核对](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md)
 - [PPO 四个角色、Critic 结构与训练、九段流程、KL 两种放法、单次更新时 ratio ≡ 1 的 Clip 退化、重算 Logprob 的两个比值](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
 - [GAE 的 λ 偏差/方差与长序列衰减、PPO 与 GRPO 的组内长尾差异](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md#35-ppo--gae-能否比-grpo-更好地分配功劳)
 - [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
@@ -277,6 +279,7 @@
 - [Ray ObjectRef 所有权：ID 可广播、所有权须原生获取；torch 私拷贝 vs numpy 零拷贝共享](notes/2026/10/路由回放的引用所有权校验位置与开销拆解_20261013.md#31-只给-dp-head-发引用其他-rank-广播拿-id-会怎样)
 - [激活重算的路由 FIFO：1F1B 下训练必须记录、前向-only 不记录](notes/2026/10/路由回放的引用所有权校验位置与开销拆解_20261013.md#32-为什么训练路径必须记录反向队列前向-only-不用)
 - [Ray 三组成、借用 = 分布式 shared_ptr、GPU 不是进程、ID 不是地址、数据在推理节点](notes/2026/10/Ray进程模型对象引用生命周期与重算队列_20261013.md)
+- [启动脚本 fork 的进程不在 Ray 资源调度里：与 driver/GCS 抢 head 资源](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md#34-外部平台进程跑在哪不在-ray-资源调度里)
 - [重算队列：一个变量 + 每 Router 一个共用 FIFO、只在重算覆盖 Router 时有读者、先估算再优化](notes/2026/10/Ray进程模型对象引用生命周期与重算队列_20261013.md#38-重算队列一个变量--一个-fifo)
 - [PP 空泡、MTP Embedding 副本、CP Zigzag/Ring/All-to-All 与 TP 的 SP](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md)
 - [SP 传激活不传参数、反向重 All-Gather 与复制参数梯度求和](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md#38-sp-补充传的是激活值不是参数)
@@ -350,7 +353,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；PPO 与 GSPO 原论文已精读（2026-10-14）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO 原论文、GSPO 梯度手推、推训偏差的 TIS/MIS 修正仍待深入；
+- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；PPO 与 GSPO 原论文已精读（2026-10-14）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO 原论文、GSPO 梯度手推、推训偏差的 TIS/MIS 修正仍待深入；采样截断的 `1/Z`、raw logprob 与温度口径对 `π_prox/π_behave` 的影响已有入门（2026-10-14，实际偏差大小待验证）；
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
