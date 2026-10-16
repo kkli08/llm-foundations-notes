@@ -16,6 +16,7 @@
 
 这里只保留阅读路线，逐日链接统一放在[总索引](INDEX.md)，避免首页随工作天数增长变成流水账。2026-10-10 补齐 FastVideo 历史知识，内容仍按实际发生日期归档。
 
+- [PPO / GRPO / GSPO 复习路线](reviews/ppo-grpo-20260724-20261016.md)：统一符号与训练步时间线 → Advantage 与两层归一化 → Ratio/Clip 与 Off-policy → KL → 训推偏差 → 崩溃诊断；覆盖 7 月 24 日～10 月 16 日。
 - [10 月近期学习路线](reviews/QUICK_REVIEW.md)：并行切分、路由显存、权重版本、Agentic RL 吞吐与健康负载对照。
 - [FastVideo 与 WM 复习路线](reviews/fastvideo-wm-20260918-20261007.md)：视频扩散 → 条件广播 → 编译边界 → BF16 梯度 → 显存生命周期 → 长跑证据；覆盖 9 月 18 日～10 月 7 日补录。
 - [9 月 W38 复习路线](reviews/2026-W38.md)：输出端梯度 → 编译布局 → 评测终态 → 显存与保存，保留为前置阅读。
@@ -24,7 +25,7 @@
 
 | 月份 | 主题概览 | 月度入口 |
 |---|---|---|
-| 2026 年 10 月 | PP/CP/SP、路由回放与动态形状、权重版本、Agent RL 吞吐与健康窗口 | [查看 10 月全部笔记](INDEX.md#2026-年-10-月) |
+| 2026 年 10 月 | PPO/GRPO/GSPO、KL 与训推偏差、RL 崩溃归因；PP/CP/SP、路由回放与动态形状、权重版本、Agent RL 吞吐与健康窗口 | [查看 10 月全部笔记](INDEX.md#2026-年-10-月) |
 | 2026 年 9 月 | MTP/评测基础；FastVideo 视频扩散、编译融合、BF16 验收与显存生命周期 | [查看 9 月全部笔记](INDEX.md#2026-年-9-月) |
 | 2026 年 8 月 | Online EVO Rollout、MTP 显存生命周期与 allocator 归因、Online MTP K/D 解耦、MTP+CP/PP、Cohort、MoE Router Replay | [查看 8 月全部笔记](INDEX.md#2026-年-8-月) |
 | 2026 年 7 月 | LLM/Transformer 基础、训练与 RL、MoE/MTP、状态管理、Qwen3.5 GDN | [查看 7 月全部笔记](INDEX.md#2026-年-7-月) |

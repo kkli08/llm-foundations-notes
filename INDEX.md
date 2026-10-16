@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-10-16；[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
+> 最后更新：2026-10-16；[PPO/GRPO/GSPO 复习路线](reviews/ppo-grpo-20260724-20261016.md)、[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
 
 ## 按日期
 
@@ -88,6 +88,8 @@
 - [2026-10-15：温度口径偏差的实测判读与 KL 放置位置](notes/2026/10/温度偏差实测与KL放置位置_20261015.md)
 - [2026-10-15：KL 估计器 k1/k2/k3 与放置位置的设计动机（10 月 16 日补录）](notes/2026/10/KL估计器与放置位置的设计动机_20261015.md)
 - [2026-10-15：单次更新下两个比值的分工与 Clip 的真实作用（10 月 16 日补录）](notes/2026/10/单次更新下两个比值的分工与Clip的真实作用_20261015.md)
+- [2026-10-16：截断采样 × 批级归一化的双条件崩溃机制](notes/2026/10/截断采样与批级归一化的双条件崩溃机制_20261016.md)
+- [2026-10-16：GRPO 训练步的参数时序与四个“KL”指标](notes/2026/10/GRPO训练步的参数时序与四个KL指标_20261016.md)
 
 ## 按主题
 
@@ -200,29 +202,70 @@
 - [QK Norm、RoPE 与 KV Cache 的 Decode 边界](notes/2026/08/推理算子位置图与性能归因_20260811.md#2-qk-norm先稳定查询和索引的尺度)
 - [TP Local Argmax 的收益与边界](notes/2026/08/推理算子位置图与性能归因_20260811.md#5-local-argmax减少-tp-词表聚合不减少-lm-head-计算)
 
-### 训练与后训练
+### RL 算法：PPO、GRPO 与 GSPO
 
-- [PPO 论文精读、GSPO 序列级几何平均 ratio 与梯度对比、MoE 路由抖动、实现与论文的三处差别、推理端 raw logprob 口径](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
-- [rollout 接入方式的“online”、先只读审查再分类修补](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md#35-online到底指什么)
-- [top-p/top-k 截断的 `1/Z`、raw logprob 与温度不一致的比值偏差、采样参数逐段核对](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md)
-- [温度偏差实测：近似 KL 均值的符号、同模型只改温度、随熵收缩、几何平均抵消；“不可能的读数”查定义](notes/2026/10/温度偏差实测与KL放置位置_20261015.md)
-- [KL 进 Reward 与进 Loss 完整对比、GRPO 下 GAE 只是广播、双开与 ref 温度两个实现缺口](notes/2026/10/温度偏差实测与KL放置位置_20261015.md#39-kl-的两种放法完整对比)
-- [批级归一化答疑：作用于每个 token、整批只算一次、归一化的是 advantage、零方差组的构成翻转](notes/2026/10/温度偏差实测与KL放置位置_20261015.md#35-批级归一化影响的不只是零方差组被纠正的误解)
-- [k1/k2/k3 估计器、k1 进 loss 期望梯度为 0、k3 对应反向 KL、两种放法的设计动机、与异步无关、KL 与批级归一化是独立开关](notes/2026/10/KL估计器与放置位置的设计动机_20261015.md)
-- [批级归一化的缺陷与取舍、为 PPO 审归一化组件、截断逐条判断、bug/集成缺陷/配置误导/设计取舍分类](notes/2026/10/KL估计器与放置位置的设计动机_20261015.md#36-批级归一化哪部分是缺陷哪部分是取舍被纠正的误解)
-- [单次更新的两个比值：r ≡ 1 仍传梯度、比值乘在 loss 里、分母四种组合、两种重算、clip 只限多次更新的累积偏移、重算不替换 π_behave](notes/2026/10/单次更新下两个比值的分工与Clip的真实作用_20261015.md)
+- **入口：[PPO / GRPO / GSPO 复习路线](reviews/ppo-grpo-20260724-20261016.md)**：统一符号、一个训练步的时间线、三个算法的差别、崩溃案例因果链、纠错汇总与跨笔记自测。
+
+#### 基础
+
+- [RL 后训练闭环](notes/2026/07/训练与RL后训练基础_20260724.md#5-rl-后训练模型从评价结果中继续学习)
+- [Old、Prox、Current、Reference Logprob](notes/2026/07/训练与RL后训练基础_20260724.md#59-相同-token-的四类-logprob到底指什么)
+- [Advantage、Policy Ratio 与 Policy Loss](notes/2026/07/训练与RL后训练基础_20260724.md#512-advantage-怎样变成-policy-loss)
+- [PPO Clip 与 KL 约束](notes/2026/07/训练与RL后训练基础_20260724.md#513-ppo-clip-与-kl-约束不是一回事)
+- [组内 Advantage 与二元 Reward](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#7-同一-prompt-的多回答与组内-advantage)
+- [Logit、Probability、Logprob 与 Sequence Logprob](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#2-logprob-到底是什么)
+- [On-policy、Off-policy 与训推挑战](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#3-on-policy-和-off-policy)
+- [PPO 与 GRPO 的最小完整骨架](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#4-ppo-与-grpo-的最小完整骨架)
+- [W0/W5/W6 策略版本与 Logprob 时序](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#2-w0-w5-w6-策略版本与-logprob-时序)
+- [如何判断 RLVR 变好还是变差](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#4-如何判断-rlvr-变好还是变差)
+
+#### 完整流程与算法对比
+
 - [PPO 四个角色、Critic 结构与训练、九段流程、KL 两种放法、单次更新时 ratio ≡ 1 的 Clip 退化、重算 Logprob 的两个比值](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
 - [GAE 的 λ 偏差/方差与长序列衰减、PPO 与 GRPO 的组内长尾差异](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md#35-ppo--gae-能否比-grpo-更好地分配功劳)
-- [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
-- [Reward 与 Advantage 两层归一化、两个“按 Token”、按 Token vs 按轨迹统计、只改配置拆开平移与缩放](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md)
 - [GRPO 六段流水线、GRPO = V≡0/γ=λ=1 的 GAE、批级归一化的平移与放大、截断采样下的长尾偏移（假说）](notes/2026/10/GRPO流程与批级Advantage归一化的偏移机制_20261012.md)
-- [归因七步工作流、KL 主因假设被否定、外部稳定配置的证明边界、打包实验的隐含混杂](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md)
+- [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
+- [PPO 论文精读、GSPO 序列级几何平均 ratio 与梯度对比、MoE 路由抖动、实现与论文的三处差别、推理端 raw logprob 口径](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
+- [rollout 接入方式的“online”、先只读审查再分类修补](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md#35-online到底指什么)
+- [一个训练步里 T、top-p/k、组内 z-score、批级归一化、ratio/clip、行为侧权重各在哪一段生效；五个分布](notes/2026/10/GRPO训练步的参数时序与四个KL指标_20261016.md)
+
+#### Advantage 与归一化
+
+- [Reward 与 Advantage 两层归一化、两个“按 Token”、按 Token vs 按轨迹统计、只改配置拆开平移与缩放](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md)
+- [批级归一化答疑：作用于每个 token、整批只算一次、归一化的是 advantage、零方差组的构成翻转](notes/2026/10/温度偏差实测与KL放置位置_20261015.md#35-批级归一化影响的不只是零方差组被纠正的误解)
+- [批级归一化的缺陷与取舍、为 PPO 审归一化组件、截断逐条判断、bug/集成缺陷/配置误导/设计取舍分类](notes/2026/10/KL估计器与放置位置的设计动机_20261015.md#36-批级归一化哪部分是缺陷哪部分是取舍被纠正的误解)
+- [PPO 为什么要批级归一化（固定尺度、均值归 0，不保留比值）、同一设计在 GRPO 为何有害、框架默认组合的来历](notes/2026/10/截断采样与批级归一化的双条件崩溃机制_20261016.md#36-ppo-为什么要做批级归一化被纠正的误解)
+
+#### Ratio、Clip 与 Off-policy
+
+- [单次更新的两个比值：r ≡ 1 仍传梯度、比值乘在 loss 里、分母四种组合、两种重算、clip 只限多次更新的累积偏移、重算不替换 π_behave](notes/2026/10/单次更新下两个比值的分工与Clip的真实作用_20261015.md)
+- [版本号 = Policy 版本、Staleness 容量与离策略窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
 - [clip-higher、序列级重要性采样等稳定配方开关的含义](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md#22-移植配方里的几类开关)
+- [行为侧权重 `π_prox/π_behave` 的用途、拒绝采样与它的漏洞](notes/2026/10/GRPO训练步的参数时序与四个KL指标_20261016.md#34-π_prox--π_behave-有什么用)
+
+#### KL
+
+- [k1/k2/k3 估计器、k1 进 loss 期望梯度为 0、k3 对应反向 KL、两种放法的设计动机、与异步无关、KL 与批级归一化是独立开关](notes/2026/10/KL估计器与放置位置的设计动机_20261015.md)
+- [KL 进 Reward 与进 Loss 完整对比、GRPO 下 GAE 只是广播、双开与 ref 温度两个实现缺口](notes/2026/10/温度偏差实测与KL放置位置_20261015.md#39-kl-的两种放法完整对比)
+- [名字带 KL 的四个指标：三个诊断、一个正则；Ref 只为 KL 正则存在](notes/2026/10/GRPO训练步的参数时序与四个KL指标_20261016.md#35-名字带-kl-的四个指标被纠正的混淆)
+
+#### 训推偏差
+
+- [top-p/top-k 截断的 `1/Z`、raw logprob 与温度不一致的比值偏差、采样参数逐段核对](notes/2026/10/采样截断与Logprob口径的训推偏差_20261014.md)
+- [温度偏差实测：近似 KL 均值的符号、同模型只改温度、随熵收缩、几何平均抵消；“不可能的读数”查定义](notes/2026/10/温度偏差实测与KL放置位置_20261015.md)
+- [截断不在 ratio 里而在样本里：分子分母都是完整分布，正确分母应是 q = π/Z](notes/2026/10/截断采样与批级归一化的双条件崩溃机制_20261016.md#35-截断不在-ratio-里而在样本里被纠正的误解)
+
+#### 崩溃诊断
+
 - [Reward 崩溃：每轮输出塌缩、全零组批归一化放大、KL 进 Reward 的长度压力与归因实验](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md)
 - [崩溃前兆的先后、停止规则的误停与迟停、同期对照](notes/2026/10/AgentRL的Reward崩溃与归因实验_20261009.md#38-同期对照的逐步观察)
 - [健康检查六步顺序、Reward 滞后、熵上冲与熵下降两种失败、组内同分非零](notes/2026/10/RL训练健康检查顺序与熵的两种失败方向_20261010.md)
+- [归因七步工作流、KL 主因假设被否定、外部稳定配置的证明边界、打包实验的隐含混杂](notes/2026/10/训练崩溃归因的工作流与实验解读_20261012.md)
 - [截断率下降为什么会抬高训练 Reward](notes/2026/10/Benchmark对照的负载等价与读数混杂_20261009.md#32-截断伪造的-reward-涨幅)
-- [版本号 = Policy 版本、Staleness 容量与离策略窗口](notes/2026/10/权重同步版本语义与Staleness窗口_20261008.md)
+- [截断 × 批级归一化的双条件崩溃：常数 Advantage 在 π 下期望为 0、在 q 下为 ∇log Z；循环增益；单变量对照](notes/2026/10/截断采样与批级归一化的双条件崩溃机制_20261016.md)
+
+### 训练与后训练
+
 - [Staleness 配额完成不归还：同步前在途下降，推理越快空等越长](notes/2026/10/Benchmark对照的负载等价与读数混杂_20261009.md#33-版本配额与同步前的并发下降)
 - [冻结输出头仍需 Hidden 梯度与原生并行契约](notes/2026/09/冻结输出头梯度与原生并行契约_20260915.md)
 - [整次更新 Token 加权、DP/CP 分母、显式辅助 Loss 与 Detach](notes/2026/09/MTP全局Token归一化与多深度梯度_20260911.md)
@@ -230,21 +273,14 @@
 - [激活值为什么要为反向保存、为什么随序列线性增长](notes/2026/10/PP_CP_SP的切分对象与通信代价_20261009.md#39-激活值复习为什么训练要存为什么随序列变长)
 - [预训练](notes/2026/07/训练与RL后训练基础_20260724.md#3-预训练先学会预测文本中的下一个-token)
 - [SFT](notes/2026/07/训练与RL后训练基础_20260724.md#4-sft仍然预测-token但数据变成了理想行为示范)
-- [RL 后训练闭环](notes/2026/07/训练与RL后训练基础_20260724.md#5-rl-后训练模型从评价结果中继续学习)
-- [Old、Prox、Current、Reference Logprob](notes/2026/07/训练与RL后训练基础_20260724.md#59-相同-token-的四类-logprob到底指什么)
-- [Advantage、Policy Ratio 与 Policy Loss](notes/2026/07/训练与RL后训练基础_20260724.md#512-advantage-怎样变成-policy-loss)
-- [PPO Clip 与 KL 约束](notes/2026/07/训练与RL后训练基础_20260724.md#513-ppo-clip-与-kl-约束不是一回事)
 - [Actor、Rollout 与权重同步](notes/2026/07/训练与RL后训练基础_20260724.md#6-为什么-actor-与-rollout-engine-要分开)
 - [从启动命令到一个 RL Step](notes/2026/07/训练与RL后训练基础_20260724.md#65-从启动命令到一个-rl-step-的通用工程链路)
 - [模型家族、Checkpoint 与 Actor/Reference/Rollout](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#1-模型家族-checkpoint-与运行角色)
-- [W0/W5/W6 策略版本与 Logprob 时序](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#2-w0-w5-w6-策略版本与-logprob-时序)
-- [如何判断 RLVR 变好还是变差](notes/2026/07/RLVR策略版本与训练诊断_20260726.md#4-如何判断-rlvr-变好还是变差)
 - [NTP 与 MTP Label Shift](notes/2026/07/MTP标签损失与参数更新_20260726.md#2-未来-token-怎样变成-ntp-与-mtp-label)
 - [Cross-Entropy 与正确 Token 概率](notes/2026/07/MTP标签损失与参数更新_20260726.md#3-cross-entropy-到底衡量什么)
 - [Forward、Loss、Backward 与 Optimizer](notes/2026/07/MTP标签损失与参数更新_20260726.md#4-forward-loss-backward-optimizer-的严格分工)
 - [MTP 参数的完整生命周期](notes/2026/07/MTP标签损失与参数更新_20260726.md#6-mtp-参数的完整生命周期)
 - [一个外层 RLVR Step 与多回答 Group](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#6-一个外层-rlvr-step-到底发生了什么)
-- [组内 Advantage 与二元 Reward](notes/2026/07/训练部署Baseline与RLVR闭环_20260727.md#7-同一-prompt-的多回答与组内-advantage)
 - [MTP 完整支持的五个契约](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#7-完整-mtp-支持的五个契约)
 - [Load、Train、Rollout MTP 模式矩阵](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#8-为什么-mtp-要拆成-loadtrainrollout-三个开关)
 - [MTP-off 向后兼容](notes/2026/07/Qwen3MoE与MTP适配最小架构_20260727.md#9-怎样保证向后兼容)
@@ -263,9 +299,6 @@
 - [DCP、HF Export 与 Online Weight Sync](notes/2026/07/MTP模型状态流与在线权重事务_20260729.md#3-dcphf-checkpoint-和-online-weights-的区别)
 - [分片 safetensors 索引的双向一致性与按分片文件头重建](notes/2026/10/HF导出索引一致性与旧MTP头_20261010.md#33-索引多列触发场景与影响面)
 - [Qwen3.5 GDN 的 Training、Prefill、Decode 与 MTP 状态边界](notes/2026/07/Qwen3.5混合架构与GatedDeltaNet_20260731.md#9-trainingprefilldecode-都使用这套架构)
-- [Logit、Probability、Logprob 与 Sequence Logprob](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#2-logprob-到底是什么)
-- [On-policy、Off-policy 与训推挑战](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#3-on-policy-和-off-policy)
-- [PPO 与 GRPO 的最小完整骨架](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#4-ppo-与-grpo-的最小完整骨架)
 - [为什么 On-policy 优化不能只看 Rollout TPS](notes/2026/08/OnPolicy训推与MTP性能分析_20260806.md#5-on-policy-的关键是否就是-rollout-推理优化)
 - [MTP+CP 的 Future Label、Mask 与 Recompute 契约](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#3-cp-为什么会破坏朴素的-mtp-shift)
 - [普通 CP 能力与 MTP+CP Runtime Capability 的区别](notes/2026/08/MTP与ContextParallel训练正确性_20260817.md#115-2026-08-28-补充普通-cp-能力不等于-mtpcp-集成能力)
@@ -363,7 +396,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO 的 On-policy、Ratio/Clip、Critic Baseline 与 Group-relative Baseline 已补齐；KL 进逐 Token Reward 在 γ=λ=1 下的长度效应、全零组与批级 Advantage 归一化放大已有入门（2026-10-09，是否为崩溃主因待实验）；训练健康检查顺序、熵上冲/熵下降两种失败与温度对熵量级的影响已有入门（2026-10-10），Entropy Bonus 仍待深入；GRPO 作为 GAE 特例、批级 Advantage 归一化的平移/放大与截断采样交互已有入门（2026-10-12，交互机制仍是待验证假说；KL 主因假设已被实验否定）；Critic 结构与训练、GAE 的 λ 权衡、单次更新下 Clip 退化、GRPO 变体（长度/难度偏差、动态采样、clip-higher、GSPO、RLOO）与两层归一化已有入门（2026-10-13）；PPO 与 GSPO 原论文已精读（2026-10-14）；Critic Loss 细节、Value 预训练与轮次级 Value、DAPO 原论文、GSPO 梯度手推、推训偏差的 TIS/MIS 修正仍待深入；采样截断的 `1/Z`、raw logprob 与温度口径对 `π_prox/π_behave` 的影响已有入门（2026-10-14）；温度偏差已实测（2026-10-15：方向确认、序列级量级很小），`1/Z` 截断偏差仍待验证；KL 两种放法的完整对比已补齐（2026-10-15），k1/k3 估计器与梯度推导、单次更新下两个比值的分工与 clip 作用范围已补录（2026-10-15，10 月 16 日补录），k2 梯度性质、异步下 KL loss 的重要性权重、多次更新的稳定性仍待深入；
+- PPO/GRPO/GSPO：流程、两层归一化与变体、单次更新下两个比值与 clip、KL 估计器与两种放法、截断与温度的口径偏差已补齐（2026-10-12～15）；截断采样 × 批级归一化的双条件崩溃已有单变量对照支持（2026-10-16，每组一次运行），PPO 批级归一化的作用与四个“KL”指标已补齐（2026-10-16）。仍待深入：崩溃形态为何表现为熵上升、开头即 EOS；Critic Loss 与 Value 预训练、轮次级 Value；DAPO 原论文、GSPO 梯度手推、Entropy Bonus；真实采样分布作分母与 TIS/MIS 修正；k2 梯度、异步下 KL loss 的重要性权重；多 minibatch 时 clip 与行为侧权重的相互作用。完整清单见 [复习路线](reviews/ppo-grpo-20260724-20261016.md#已掌握与仍待深入)。
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
