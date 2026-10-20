@@ -1,6 +1,6 @@
 # 知识库总索引
 
-> 最后更新：2026-10-20（补录 10 月 19 日晚间内容）；[PPO/GRPO/GSPO 复习路线](reviews/ppo-grpo-20260724-20261016.md)、[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
+> 最后更新：2026-10-20（整理 10 月 20 日学习笔记）；[PPO/GRPO/GSPO 复习路线](reviews/ppo-grpo-20260724-20261016.md)、[近期快速复习](reviews/QUICK_REVIEW.md)、[FastVideo 历史复习路线](reviews/fastvideo-wm-20260918-20261007.md)。补录内容按实际发生日期记录，W38 路线保留为前置阅读。
 
 ## 按日期
 
@@ -94,6 +94,8 @@
 - [2026-10-19：异步训练的三个离策略来源与 IS/RS](notes/2026/10/异步离策略的三个来源与IS和RS_20261019.md)
 - [2026-10-19：训练口径的隐性错误与读数签名（截断判定、Loss 分母、版本对齐、每 Microbatch 开销）](notes/2026/10/训练口径的隐性错误与读数签名_20261019.md)
 - [2026-10-19：GSPO 的三个独立开关、按轮序列比值与“更新次数”（10 月 20 日补录）](notes/2026/10/GSPO开关解耦与按轮序列比值_20261019.md)
+- [2026-10-20：异步训练下的 Minibatch 个数与解耦 PPO 来源](notes/2026/10/异步训练下的Minibatch个数与解耦PPO来源_20261020.md)
+- [2026-10-20：PPO 的 Critic 价值估计、GAE 参数与工程适配](notes/2026/10/PPO的Critic价值估计GAE参数与工程适配_20261020.md)
 
 ## 按主题
 
@@ -228,6 +230,8 @@
 
 - [PPO 四个角色、Critic 结构与训练、九段流程、KL 两种放法、单次更新时 ratio ≡ 1 的 Clip 退化、重算 Logprob 的两个比值](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md)
 - [GAE 的 λ 偏差/方差与长序列衰减、PPO 与 GRPO 的组内长尾差异](notes/2026/10/PPO的Critic与Clip在单次更新下的退化_20261013.md#35-ppo--gae-能否比-grpo-更好地分配功劳)
+- [Critic 怎么算价值、4 token 的 GAE 手算、拟合目标是 G 不一定是 R、value clip、MSE 最小点 = 通过率 = GRPO 组均值、γ 的长度惩罚、λ = 0/1 对照手算、EV 作为改 λ 的前提](notes/2026/10/PPO的Critic价值估计GAE参数与工程适配_20261020.md)
+- [给框架加 Critic：分布式模型换价值头要在 DDP 包装前、各 rank 初始化一致；恢复、指标、配置校验三处补丁；配方只差 critic 一个变量](notes/2026/10/PPO的Critic价值估计GAE参数与工程适配_20261020.md#37-给-rl-框架加-critic算法几乎现成工程闭环要补)
 - [GRPO 六段流水线、GRPO = V≡0/γ=λ=1 的 GAE、批级归一化的平移与放大、截断采样下的长尾偏移（假说）](notes/2026/10/GRPO流程与批级Advantage归一化的偏移机制_20261012.md)
 - [GRPO 七类已知问题与 Dr.GRPO/DAPO/GSPO/RLOO/LitePPO 变体](notes/2026/10/GRPO变体与两层归一化的拆解_20261013.md#31-原版-grpo-的已知问题与对应变体)
 - [PPO 论文精读、GSPO 序列级几何平均 ratio 与梯度对比、MoE 路由抖动、实现与论文的三处差别、推理端 raw logprob 口径](notes/2026/10/GSPO序列级比率与PPO论文精读_20261014.md)
@@ -252,6 +256,7 @@
 - [行为侧权重 `π_prox/π_behave` 的用途、拒绝采样与它的漏洞](notes/2026/10/GRPO训练步的参数时序与四个KL指标_20261016.md#34-π_prox--π_behave-有什么用)
 - [离策略三来源 → 两个比值、minibatch × 行为侧权重 2×2、版本差上限是准入门槛、IS 修偏差/RS 控方差、RS 两种意思、比值修不了自己的分母](notes/2026/10/异步离策略的三个来源与IS和RS_20261019.md)
 - [更新次数 = minibatch 个数 = step 次数、micro-batch 不算、重算 logp ≠ 更新、“多久更新”是另外三件事、“importance” 命名的开关与指标指 PPO 比值](notes/2026/10/GSPO开关解耦与按轮序列比值_20261019.md#38-更新次数minibatch-与-micro-batch被纠正的说法)
+- [异步不要求 minibatch 个数 = 1：两段比值相乘 = π_θ/π_behave；解耦 PPO 出自 batch 大小不变性研究；版本号粒度不随 minibatch 个数变（被纠正）；版本差两道关；k > 1 变/不变清单；行布局对 PPO GAE 的影响；小 batch 比例指标的量化](notes/2026/10/异步训练下的Minibatch个数与解耦PPO来源_20261020.md)
 
 #### KL
 
@@ -411,7 +416,7 @@
 - FlashAttention kernel；
 - 量化与 KV Cache 量化；
 - Speculative Decoding 的成块 Verify、线性接受前缀与状态提交已有入门；Sampling 分布校正推导、树形候选与框架实现仍待深入；
-- PPO/GRPO/GSPO：流程、两层归一化与变体、单次更新下两个比值与 clip、KL 估计器与两种放法、截断与温度的口径偏差已补齐（2026-10-12～15）；截断采样 × 批级归一化的双条件崩溃已有单变量对照支持（2026-10-16，每组一次运行），机制当天修订为“除以 σ 拆掉刹车、截断是推测的触发”，PPO 批级归一化的作用与四个“KL”指标已补齐（2026-10-16）。仍待深入：只减均值/只除标准差的拆开验证、截断如何触发下滑；崩溃形态为何表现为熵上升、开头即 EOS；Critic Loss 与 Value 预训练、轮次级 Value；DAPO 原论文、GSPO 梯度手推、Entropy Bonus；真实采样分布作分母与 TIS/MIS 修正；k2 梯度、异步下 KL loss 的重要性权重；多 minibatch 时 clip 与行为侧权重的相互作用。2026-10-19 补齐多轮拆行的影响、离策略三来源与 IS/RS、训练口径的读数签名；新增待办：online GSPO 的“序列”单位与聚合方式、按轨迹等权的单变量测试、token/序列级 RS 与 mask/clamp 取舍。完整清单见 [复习路线](reviews/ppo-grpo-20260724-20261016.md#已掌握与仍待深入)。
+- PPO/GRPO/GSPO：流程、两层归一化与变体、单次更新下两个比值与 clip、KL 估计器与两种放法、截断与温度的口径偏差已补齐（2026-10-12～15）；截断采样 × 批级归一化的双条件崩溃已有单变量对照支持（2026-10-16，每组一次运行），机制当天修订为“除以 σ 拆掉刹车、截断是推测的触发”，PPO 批级归一化的作用与四个“KL”指标已补齐（2026-10-16）。仍待深入：只减均值/只除标准差的拆开验证、截断如何触发下滑；崩溃形态为何表现为熵上升、开头即 EOS；Critic Loss 与 Value 预训练、轮次级 Value；DAPO 原论文、GSPO 梯度手推、Entropy Bonus；真实采样分布作分母与 TIS/MIS 修正；k2 梯度、异步下 KL loss 的重要性权重；多 minibatch 时 clip 与行为侧权重的相互作用。2026-10-19 补齐多轮拆行的影响、离策略三来源与 IS/RS、训练口径的读数签名；新增待办：online GSPO 的“序列”单位与聚合方式、按轨迹等权的单变量测试、token/序列级 RS 与 mask/clamp 取舍。2026-10-20 补齐解耦 PPO 来源与 minibatch 个数的作用边界、Critic 价值估计与拟合、γ/λ 的含义与 value clip；新增待办：同算法只改 minibatch 个数的异步对照、Critic 的 EV 曲线与何时调 λ、PPO 与 GRPO 只差 critic 的对照。完整清单见 [复习路线](reviews/ppo-grpo-20260724-20261016.md#已掌握与仍待深入)。
 - GDN、递归状态与混合 Attention 已有任务所需完整入门；Chunkwise Parallel/WY 推导、Kernel、Prefix Cache 以及 TP/CP 下的状态分片仍待深入。
 
 ## 索引维护规则
